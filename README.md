@@ -45,7 +45,7 @@ Enter same passphrase again:<再次输入加密串>
 
 
 
-### 添加 SSH Key 到 GitHub
+### 4.添加 SSH Key 到 GitHub
 
 在本机设置 SSH Key 之后，需要添加到 GitHub上，以完成 SSH 链接的设置。
 
@@ -57,7 +57,7 @@ Enter same passphrase again:<再次输入加密串>
 
 SSH Key 配置成功
 
-### 测试
+### 5.测试
 
 可以输入下面的命令，看看设置是否成功，git@GitHub.com 的部分不要修改
 
@@ -77,7 +77,7 @@ The authenticity of host 'GitHub.com (207.97.227.239)' can't be established. RSA
 Hi boold! You've successfully authenticated, but GitHub does not provide shell access. 
 ```
 
-### 设置用户信息
+### 6.设置用户信息
 
 现在你已经可以通过 SSH 链接到 GitHub 了，还有一些个人信息需要完善的。
 
@@ -100,7 +100,7 @@ Git 会根据用户的名字和邮箱来记录提交。GitHub 也是用这些信
 
 
 
-###最最日常使用
+###7.最最日常使用
 
 更新代码/添加md:
 
