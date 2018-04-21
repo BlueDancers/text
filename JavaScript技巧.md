@@ -200,11 +200,77 @@ Number.isNaN(NaN)
 > true
 ```
 
-## **8.下列代码将输出什么？并解释原因。**
+## **8.****实现函数 isInteger(x) 来判断 x 是否是整数**
+
+这个的方法很多 首先 使用 Math的.round()这样的方法
 
 ```
+function isInteger(x) {
+    return Math.round(x) === x
+}
+```
 
+还要比较高的方法
+
+```
+function isInteger(x) {
+	return (x^0) === x
+}
+```
+
+不可以使用paeseInt 详情见 http://www.cnblogs.com/wuvkcyan/p/8899250.html
+
+## **9.下列代码将输出什么？并解释原因。**
+
+```javascript
+console.log(0.1 + 0.2);
+console.log(0.1 + 0.2 == 0.3);
+> 0.30000000000000004
+> false
+```
+
+JavaScript中的数字和浮点精度的处理相同，因此，可能不会总是产生预期的结果。
+
+## **10.下列代码行1-4如何排序，使之能够在执行代码时输出到控制台？ 为什么？**
+
+```javascript
+(function() {    
+	console.log(1); 
+    setTimeout(function () {
+		console.log(2)
+	}, 1000); 
+    setTimeout(function () {
+    console.log(3)
+    }, 0); 
+    console.log(4);
+})();
 ```
 
 
+
+
+
+
+
+结果
+
+```
+1
+4
+
+3
+2
+```
+
+因为 
+
+1 4 首先打印 没有什么文图 就是简单调用 console.log 2 在 3 后面是因为 2 延迟了1000 3 是0毫秒输出 
+
+既然3是0毫秒输出为什么在 14 后面呢 
+
+要回答这么问题 需要正确理解 JavaScript的事件和时间的设置
+
+浏览器有一个时间循环 会检查事件队列和未处理事件,例如,例入事件发生在后台(例如脚本的loadl事件),浏览器正忙(例如click事件),那么事件会添加到到队列,当onclick时间接触 检查队列,然后处理该事件,setTimeout会将其引用的函数放入事件队列,
+
+当`setTimeout()`的第二个参数为0的时候，它的意思是“尽快”执行指定的函数。具体而言，函数的执行会放置在事件队列的下一个计时器开始。但是请注意，这不是立即执行：函数不会被执行除非下一个计时器开始。这就是为什么在上述的例子中，调用 `console.log(4)` 发生在调用 `console.log(3)` 之前（因为调用 `console.log(3)` 是通过setTimeout被调用的，因此会稍微延迟）。
 
