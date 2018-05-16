@@ -161,9 +161,28 @@ db.section.find({cno:cno})   基于变量查询
 db.section.find({ $or : [ { wages: {$lte:"13000"}},{wages: {$gte:"13000"}} ] } )
 ```
 
+给所有wanges小于13000的增加1000
 
+db.section.updateMany({wages:{\$lte: 13000}},{$inc:{wages:1000}})
 
+指定文档的排序规则 例如 按wages为升序db.getCollection('section').find({}).sort({wages:1})
 
+1 为升序 -1 为降序
 
+按wages为升序 假如 wages相同 就按name排序
 
+db.getCollection('section').find({}).sort({wages:-1,name:-1})
 
+索引查询某一列
+
+只显示wages这一列
+
+db.getCollection('section').find({},{wages:1})
+
+显示wages,name 字段
+
+db.getCollection('section').find({},{wages:1,name:1})
+
+只不显示wages这一列
+
+db.getCollection('section').find({},{wages:0})
