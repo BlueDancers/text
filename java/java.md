@@ -233,5 +233,211 @@ continue 后面不能有代码
 
 
 
+#####java的栈内存
 
+储存的都是局部变量
+
+并且变量所属的作用域一但结束,该变量就会释放
+
+#####java的堆内存
+
+储存的是数组和对象 (数组也是对象) 
+
+特点:
+
+1. 每个实体都有首地址值
+2. 堆内存里的每个变量都会默认初始化,根据类型的不同而不同,整数为0 ,小数为0.0 等等
+3. 自动的垃圾回收机制
+
+#### java数组
+
+格式1: 
+
+​	int[] arr = new int[3]; 在堆内存里面储存一个长度为3的数组
+
+格式2:
+
+元素类型[] 数组名 = new 元素类型[]{元素,元素,元素}
+
+​	int[] arr = new int[]{1,2,3,4,5};
+
+​	int[] arr = {1,2,3,4,5};
+
+**数组获取最大值:**
+
+```java
+ public static int getMax(int[] arr){
+      int max = arr[0];
+      for (int i = 1; i < arr.length; i++) {
+        if (arr[i] > max) {
+            max =arr[i]; 
+        }
+      }
+      return max;
+    }
+```
+
+**通过索引:**
+
+```java
+public static int getMax(int[] arr){
+      int max = 0;
+      for (int i = 1; i < arr.length; i++) {
+        if (arr[i] > arr[max]) {
+            max = i; 
+        }
+      }
+      return arr[max];
+    }
+```
+
+**选择排序:**
+
+```java
+class demo
+{
+    public static void main(String[] args){
+      int[] arr = {1,2,3,4,5,312,32131,-2};
+      selectsort(arr);
+      for (int i = 0; i < arr.length; i++) {
+        System.out.println(arr[i]);
+      }
+    }
+    public static void selectsort(int[] arr){
+      for (int i = 0; i <arr.length-1 ; i++) {
+        for (int f = i+1; f < arr.length; f++) {
+          if(arr[f]>arr[i]){
+            int temp = arr[f];
+            arr[f] = arr[i];
+            arr[i] = temp;
+          }
+        }
+      }
+    }
+}
+```
+
+**冒泡排序**
+
+```java
+public static void msort(int[] arr){
+      for (int i = arr.length-1; i >=0; i--) {
+        for (int f = 0; f < i; f++) {
+          if (arr[f]<arr[f+1]) {
+            int temp = arr[f+1];
+            arr[f+1] = arr[f];
+            arr[f] = temp;
+          }
+        }
+      }
+    }
+```
+
+**通过内存排序**
+
+```java
+ public static void sort_2(int[] arr) {
+      for (int i = 0; i < arr.length-1; i++) {
+        int mun = arr[i];
+        int index = i;
+        for (int f = i+1; f < arr.length; f++) {
+          if(mun < arr[f]){
+            mun = arr[f];
+            index = f;
+          }
+        }
+        int temp = arr[index];
+        arr[index] = arr[i];
+        arr[i] = temp;
+      }
+    }
+```
+
+
+
+**有问题的 10进制 转 16进制**
+
+```java
+ public static void toHex(int num){
+	      String score = " ";
+	      for (int i = 0; i < 8; i++) {
+	    	  int temp = num & 15;     // 意思就是 将前4个二进制数匹配出来    1111 $ 0011 = 0011
+	        if(temp > 9){
+	        	score += (char)(temp-10+'A'); //假如是16进制 大于10的数要转字母 
+	        } else if(temp == 0){
+	          //略过
+	        } else {
+	        	score+=temp;
+	        }
+	        num = num >>> 4;   //向右移动4位 也就是走转换过的16进制
+	      }
+	      System.out.println("score:"+score);
+	    }
+```
+
+**10进制转16 但是没有去除空格**
+
+```java
+ public static void toHex(int num){
+		 char[] chs = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+		 char[] pos = new char[8];
+		 for (int i = 7; i >= 0; i--) {
+			int temp = num & 15;
+			if(temp == 0) {
+				//跳过
+			} else if(temp != 0) {
+				pos[i] = chs[temp];
+			}
+			num = num >>> 4;
+		}
+		 for (int i = 0; i < pos.length; i++) {
+				System.out.print(pos[i]);
+		}
+	}
+```
+
+10进制 转 4 8 16
+
+```java
+public class first {
+
+	public static void main(String[] args) {
+		sixteen(16);
+	}
+	
+	public static void sixteen(int num) {     // 10转16
+		trans(num, 15, 4);
+	}
+	public static void two(int num) {         // 10转2
+		trans(num,1,1);
+	}
+	public static void eight(int num) {       // 10转8
+		trans(num,7,3);
+	}
+	
+	 public static void trans(int num,int base,int offset){
+		 char[] chs = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+		 char[] pos = new char[8];
+		 for (int i = 7; i >= 0; i--) {
+			int temp = num & base;
+				pos[i] = chs[temp];
+			num = num >>> offset;
+		}
+		 for (int i = 0; i < pos.length; i++) {
+			 if(pos[i] != '0') {
+				 break;
+			 }else {
+				 pos[i] = '#';
+				 
+			 }
+		 }
+		 for (int i = 0; i < pos.length; i++) {
+			if(pos[i] != '#') {
+				System.out.print(pos[i]);
+			}
+		}
+	 }
+```
+
+  
 
