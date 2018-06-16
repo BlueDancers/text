@@ -1,4 +1,4 @@
-# java
+java
 
 这一年一直都学习前端,相对来说,底层的实现,或许好不太懂,但是基本可以完成前端遇到的问题,但是合肥这边后端基本都是java,没办法,只能学习java了
 
@@ -439,5 +439,178 @@ public class first {
 	 }
 ```
 
-  
+ ### 面向对象
+
+对象:该类事物实实在在存在的个体
+
+类和对象的关系:
+
+类:事物的描述
+
+对象:该类事物的实例,在java里面通过new来创建
+
+```java
+public class catDemo {
+
+	public static void main(String[] args) {
+		car c = new car();  //在计算机里面创建一个car的实例.通过new关键字
+		c.num=4;
+		c.color="red";
+		c.run();  //要使用对象的内容可以通过,对象.成员的方法去完成调用
+	}
+
+}
+
+class car{
+	int num;
+	String color;
+	void run() {
+		
+		System.out.println(num+"-----"+color);
+	}
+}
+
+```
+
+定义类就是定义类里面的成员  **成员变量 与 成员函数**
+
+```
+new 的时候会在堆内存开辟一点空间,并且分配内存,给new的变量
+c.num 就会找到堆内存里面的变量并且给他赋值
+```
+
+成员变量与局部变量的区别
+
+成员变量:
+
+​	定义在类中,整个类都可以访问
+
+​	存在于堆内存的对象里面
+
+​	随着对象的创建而存在,随着对象的消失而消失
+
+​	成员变量都有初始化值
+
+局部变量:
+
+​	定义在函数,语句,局部代码块里面,只在所属区域有效
+
+​	存在与栈内存的方法里面
+
+​	随着所属区域的执行而存在,随着所属区域的结束而释放(出栈)
+
+​	局部变量没有初始化值
+
+#### 匿名对象
+
+没有名字的对象 new car(); 
+
+1. 对方法只有一次调用的时候可以简化成匿名函数
+2. 匿名函数可以作为实际参数进行传递
+
+
+
+
+
+##### 基本数据类型参数传递
+
+```java
+public class day6 {
+	
+	public static void main(String[] args) {
+		int x = 3;
+		show(x);
+		System.out.println(x);
+	}	
+	
+	public static void show(int x) {
+		x = 4;
+	}
+}
+
+```
+
+基本类型弹出栈后 不会影响主函数的数值
+
+##### 引用类型参数传递
+
+```java
+int x = 3;
+	public static void main(String[] args) {
+		day6 d = new day6();
+		d.x = 9;
+		show(d);
+		System.out.println(d.x);
+	}
+	
+	public static void show(day6 d) {
+		d.x = 4;
+	}
+```
+
+引用类型会因为引用地址的数值变化而变化
+
+##### 封装
+
+指隐藏对象的属性和实现细节,仅对外提供公共访问方式
+
+好处:
+
+- 将变化隔离
+- 提高安全性
+- 提高复用性
+
+封装的原则:
+
+- 将不需要对外提供的内容都隐藏起来
+- 把属性隐藏的同时,提供公共方法进行访问
+
+private :私有 权限修饰符 用于修饰成员,私有的内容仅仅在本类里面有效
+
+ ##### 二维数组
+
+```java
+public class twoArray {
+	public static void main(String[] args) {
+		int[][] arr = new int[2][3];
+		//创建一个二维数组,有2个一维数组,每个一维数组里面有一个3个元素的数组
+		System.out.println(arr);   			//二维数组 这里是地址
+		System.out.println(arr[0]); 		//二维数组里面的第一个 数组是对象 是引用类型 所以依旧打印内存地址
+		System.out.println(arr[0][0]);    	//二维数组里面的第一位里面的第一个
+	}
+}
+```
+
+也可以暂定二维数组的子数组不确定值,后面定义
+
+```java
+public class twoArray {
+	public static void main(String[] args) {
+		
+		int[][] arr2 = new int[2][];
+		arr2[1] = new int[3];
+		arr2[1][2] = 20;
+		System.out.println(arr2[1][2]);
+	}
+}
+```
+
+二维数组的第二种表现形式
+
+```java
+int[][] arr3 = {{1,2,3},{4,5,6},{7,8,9}};
+```
+
+遍历二维数组
+
+```java
+int[][] arr3 = {{1,2,3},{4,5,6},{7,8,9}};
+for (int i = 0; i < arr3.length; i++) {
+			for (int j = 0; j < arr3[i].length; j++) {
+				System.out.print(arr3[i][j]);
+			}
+		}
+```
+
+
 
