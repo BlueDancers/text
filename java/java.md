@@ -249,7 +249,7 @@ continue 后面不能有代码
 2. 堆内存里的每个变量都会默认初始化,根据类型的不同而不同,整数为0 ,小数为0.0 等等
 3. 自动的垃圾回收机制
 
-#### java数组
+#####java数组
 
 格式1: 
 
@@ -501,7 +501,7 @@ c.num 就会找到堆内存里面的变量并且给他赋值
 
 ​	局部变量没有初始化值
 
-#### 匿名对象
+#####匿名对象
 
 没有名字的对象 new car(); 
 
@@ -612,5 +612,268 @@ for (int i = 0; i < arr3.length; i++) {
 		}
 ```
 
+#####构造函数
 
+构建创造对象时调用的函数,作用 : 可以给对象进行初始化
+
+特征:
+
+- 方法名与类名相同
+- 在方法名前面没有返回值类型
+- 方法里面没有return
+
+一个类如果没有定义构造函数,那么这么类里面会有默认的空参数的构造函数
+
+如果指定了构造函数,就会覆盖默认的构造函数
+
+**一般函数和构造函数什么区别?**
+
+构造函数
+
+- 对象创建时,就会调用与之对应的构造函数,对对象进行初始化
+- 对象创建的时候,会调用 只调用一次
+
+一般函数
+
+- 对象创建后,需要函数功能才调用
+- 对象创建后,可以被多次调用
+
+#####构造函数- 重载
+
+```java
+public class staticClass {
+	public static void main(String args[]) {
+		Preson p = new Preson(10);
+		p.look();
+		Preson p1 = new Preson(10,"李四");
+		p1.look();
+		Preson p2 = new Preson("王二麻子",11);
+		p2.look();
+	}
+}
+
+class Preson{
+	private int age;
+	private String name;
+	
+	Preson(){
+		name = "body";
+		age = 1;
+		System.out.println("name="+name+"  "+age);
+	}
+	
+	Preson(int a){     //重载的形式去体现
+		age = a;
+	}
+	Preson(int a,String n){
+		age = a;
+		name = n;
+	}
+	Preson(String n,int a){
+		age = a;
+		name = n;
+	}
+	void look() {
+		System.out.println("name="+name+"  "+age);
+	}
+}
+```
+
+#### this
+
+当成员变量和局部变量重命,可以用关键字this来区分
+
+this就是所在函数所属对象的引用
+
+简单说: 那个对象调用this所在的函数,this就代表那个对象
+
+例如上面的代码
+
+```java
+Preson(int age,String name){
+		this.age = age;
+		this.name = name;
+	}
+```
+
+this 也可以用于构造函数里面调用其他函数
+
+注意: 只能定义在构造函数的第一行,因为初始化动作要先执行
+
+```java
+Preson(int age){
+		this.age = age;
+	}
+	Preson(int age,String name){
+		this(age);      //这里相当与再次调用构造函数,this及是本身 Preson 这里是 Preson(age)  就是上面的构造函数
+		this.name = name;
+	}
+```
+
+对this的应用
+
+```java
+public class comp {
+
+	public static void main(String[] args) {
+		compare p1 = new compare("张三", 20);
+		compare p2 = new compare("李四", 20);
+		p1.compAre(p2);
+	}
+
+}
+class compare {
+	private String name;
+	private int age;
+	
+	compare(String name,int age) {
+		this.name = name;
+		this.age = age;
+	}
+	
+	void compAre(compare p) {
+		if(this.age == p.age) {   //this指本身
+			System.out.println(this.name+"与"+p.name+"年龄相同");
+		} else {
+			System.out.println(this.name+"与"+p.name+"年龄不相同");
+		}
+	}
+}
+
+```
+
+#### static
+
+1. static是一个修饰符,用于修饰成员;
+2. static修饰的成员,被所有对象所共享
+3. static优先与对象存在,因为static的成员是随着类的加载就已经存在了
+4. static修饰的成员多以一种调用方式, 可以不需要new 直接用类名调用
+5. static修饰的数据是共享数据,对象中的储存的是特有数据
+
+```java
+public class staticDemo {
+	
+	public static void main(String[] args) {
+		demo d = new demo();  
+		d.show("张三");  
+		System.out.println(demo.country);   //可以直接访问类里面的数据
+	}
+}
+
+class demo {
+	String name;   //成员变量 实例变量
+	static String country = "CN";    //静态变量  类变量
+	public void show(String name){
+		this.name = name;
+		System.out.println(country+":"+name);
+	}
+}
+
+```
+
+**成员变量与静态变量的区别**
+
+1. 生命周期不同
+   - 成员变量随着对象的创建而存在,随着对象的被回收而释放
+   - 静态变量随着类的加载而存在,随着类的消失而消失
+2. 调用方式不一样
+   - 成员变量只能被对象调用
+   - 静态变量可以被对象调用,还可以被**类名调用**
+3. 别名不同
+   - 成员变量也被称为实例变量
+   - 静态变量被称为类变量
+4.   数据储存位置不同
+   - 成员变量数据储存在堆内存的对象中,所以也叫对象的特有数据
+   - 静态变量数据储存在方法区(共享数据区)的静态区,所以也叫对象的共享数据
+
+静态的使用的注意事项:
+
+1. 静态方法只能访问静态成员. (非静态可以访问静态,也可以访问非静态)
+2. 静态方法中不可以使用this或者super关键字
+3. 主函数是静态的
+
+```java
+public class staticDemo2 {
+
+	public static void main(String[] args) {
+		//show();   //这相当与 在静态方法里面调用非静态 会报错
+		new staticDemo2().show();    //但是可以通过new 自身去调用非静态方法
+	}
+	
+	int num = 4;
+	public void show() {
+		System.out.println(num);
+	}
+}
+```
+
+**静态什么时候用?**
+
+1. 静态变量
+
+   - 当分析对象中所具有的成员变量都是相同的时候,这时候可以被静态修饰
+   - 只要数据在对象中是不同的,就是对象的特有属性,必须储存在对象中,是非静态
+   - 如果是相同的数据,对象不需要修改,只需要使用,不需要储存对象,定义成静态的
+
+2. 静态函数
+
+   - 函数时候用静态修饰,参考一点,就是函数功能是否有访问到对象中的特有数据
+
+     假如是静态的成员变量,就用静态函数,,也可以定义非静态 
+
+     非静态可以访问静态 静态函数不可以访问非静态成员变量
+
+     假如是非静态变量,就定义非静态函数
+
+##### 静态代码块
+
+随着类的加载而执行,而且只执行一次,因为new的时候 内存已经加载  再new 内存已经存在静态代码块,所以不管new几次都只执行一次
+
+作用
+
+​	给类,静态变量进行初始化 构造函数是给成员变量进行初始化 
+
+```java
+public class staticDemo2 {
+
+	public static void main(String[] args) {
+		score s = new score();
+		score s1 = new score();
+		score s2 = new score();
+	}
+}
+
+class score{
+	static String num;
+	static {
+		num = "一";
+		System.out.println("我只执行"+num+"次");
+	}
+}
+```
+
+#### main函数解析
+
+主函数特殊之处:
+
+1. 格式固定
+2. 被jvm虚拟机所识别 调用
+
+public:             因为权限必须最大
+
+static:		不需要对象所属类名调用即可
+
+void:		主函数没有具体返回值
+
+main: 		函数名 ,是jvm识别的固定函数名
+
+String[]  args:主函数的参数列表,是一个数组类型的参数,而且元素都是字符串类型
+
+可以在命令框里面 给args传值
+
+```
+java demo a a a a a  //给args数组传值 
+```
+
+#### 继承
 
