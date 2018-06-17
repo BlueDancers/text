@@ -877,3 +877,273 @@ java demo a a a a a  //给args数组传值
 
 #### 继承
 
+提高代码复用性
+
+让类与类之间产生关系,给第三特征多态提供前提
+
+```java
+public class jichen {
+	public static void main(String[] args) {
+		Student s = new Student();
+		s.study(18, "小明");
+		Worker w = new Worker();
+		w.work(29, "张三");
+	}
+}
+
+
+class Presons {
+	int age;
+	String name;
+}
+
+class Student extends Presons {
+	void study (int age,String name) {
+		System.out.println("name:"+name+"学生--age:"+age);
+	}
+}
+
+class Worker extends Presons {
+	void work (int age,String name) {
+		this.age = age;
+		this.name = name;
+		System.out.println("name:"+name+"工人--age:"+age);
+	}
+}
+```
+
+java中支持单继承,不直接支持多继承,但是对c++中的多继承机制进行改良
+
+单继承: 一个子类只有一个父类
+
+多继承: 一个子类可以有多个直接父类(java不允许,因为会产生调用的不确定性)
+
+java支持多层继承 (c 继承 b  b 继承 a )
+
+当要使用一个继承体系的时候
+
+1. 查看该体系的顶层类,了解该体系的基本功能
+2. 创建体系中的最子类对象,完成功能的使用
+
+##### super关键字
+
+```java
+class Fu{
+	private int a = 1;
+	void geta() {
+		System.out.println(a);
+	}
+}
+
+class Zi extends Fu{
+	int a = 2;
+	Zi (){
+		//System.out.println(super.a);   //私有化的将无法super去继承
+		super.geta();
+	}
+}
+
+class Zii extends Zi {
+	int a = 3;
+	Zii () {
+		System.out.println("父类的a="+super.a);
+		
+	}
+}
+```
+
+this与super的用法很相似
+
+this: 代表一个本类对象的引用
+
+super: 代表一个父类空间 因为没有new 父类
+
+##### 继承 - 覆盖
+
+当子父类中出现成员函数一模一样的情况,会运行子类的函数
+
+这种现象,称为覆盖操作,这是函数在子父类里面的特征
+
+```java
+public class superdemo {
+	public static void main(String[] args) {
+		Zi z = new Zi();
+		z.geta();
+	}
+}
+
+
+class Fu{
+	void geta() {
+		System.out.println("我是父类");
+	}
+}
+
+class Zi extends Fu{
+	void geta() {
+		System.out.println("我是子类");
+	}
+}
+```
+
+函数的两大特性:
+
+1. 重载 在同一个类中的
+2. 覆盖,子类覆盖父类,覆盖也称为重写,覆写
+
+注意事项
+
+1. 子类方法覆盖父类方法时,子类权限必须大于等于父类权限
+2. 静态只能覆盖静态,或者被静态覆盖
+
+什么时候使用覆盖操作?
+
+当对一个类进行子类的拓展的时候,子类需要保留父类的功能声明
+
+但是要定义子类中该功能的特有内容时,就要使用覆盖操作去完成
+
+#####子父类的构造函数的问题
+
+特点: 在子类构造对象的时候,发现,访问子类构造对象时,父类也运行了
+
+原因: 在子类中所有的构造对象中的第一行都有隐式语句 spuer(),因为父类初始化动作必须第一行
+
+子类的实例化过程: 子类中所有的构造函数默认都会访问父类中的空参数的构造函数
+
+因为子类继承父类,获取到了父类内容,所以在使用父类之前,要先看父类是如何对自己的内容进行初始化的
+
+
+
+子类构造函数中如果this调用了本类构造函数时,那么super就没用了,因为super和this都只能定义在第一行,所以只能有一个
+
+```java
+public class shilihua {
+
+	public static void main(String[] args) {
+		Zilei z = new Zilei();
+		z.show();
+	}
+
+}
+
+class Fuqin {
+	Fuqin () {
+		show();
+	}
+	void show() {
+		System.out.println("this is fu");
+	}
+}
+
+class Zilei extends Fuqin {
+	int num;
+	Zilei () {
+		super();
+		//这里的this 指向子类 子类的对象变量没有初始化,等super()父类初始化完毕后,才会进行子类的成员变量初始化
+		num = 8;
+	}
+	void show () {
+		System.out.println("this is"+ num);
+	}
+}
+
+
+```
+
+一个对象的实例化过程
+
+1. jvm会读取指定的路径下的person.class文件,并加载进内存,并会先加载Person的父类
+2. 在堆内存中开辟空间,分配地址
+3. 并在对象空间中,对对象中的属性进行初始化
+4. 调用对应的构造函数进行函数的初始化
+5. 在构造函数中,第一行会先调用父类中的构造函数进行初始化
+6. 父类初始化后,会对子类的属性进行显式初始化
+7. 在进行子类构造函数的特定初始化
+8. 初始化完毕后,将地址复制给引用变量
+
+
+
+#### 设计模式
+
+单例设计模式
+
+​	解决的问题: 可以保证一个类在内存里面的唯一性
+
+比如对于多个程序使用统一配置信息对象的时候,需要保证对象的唯一性
+
+如何保证对象的唯一性?
+
+1. 不允许其他对象new 创建该对象
+2. 在该类里面创建自己的实例
+3. 对外提供方法让其他程序可以获取该对象
+
+ 步骤:
+
+1. 私有化对对象的构造函数
+2. 通过new  创建本类对象
+3. 定义一个共有方法,将创建的对象返回
+
+````java
+public class shejimoshi {
+
+	public static void main(String[] args) {
+//		test test1 = new test();    //会报错
+//		test test2 = new test();
+		test test1 = test.getInstance();
+		test test2 = test.getInstance();
+		test1.setnum(10);
+		test2.setnum(20);
+		System.out.println(test1.getnum());	
+		System.out.println(test2.getnum());
+	}
+
+}
+
+class test {
+	private int num;
+	
+	//这几行代码完成了要求
+	private test () {}  //被new 内存就没办法保持引用类型的一致
+	private static test s = new test();     //为了保持内存的一致性 在内部new 自己 并且为了外部可以引用 改为静态
+	
+	public static test getInstance() {  //因为不可以new 了 所以是能通过static的形式去让外部调用
+		return s;
+	}
+	
+	public  void setnum (int num) {
+		this.num = num;
+	}
+	public int getnum() {
+		return num;
+	}
+}
+
+````
+
+饿汉式 ---- 类一加载,对象就存在了
+
+```java
+class Single{
+	private Single () {}   //防止new 
+ 	private static Single s = new Single();     // 将对象静态化  
+   	public static Single getInstance(){       // 返回静态化的方法地址 这样 不管谁引用,都是一个地址
+    	return s;
+    }
+}
+```
+
+懒汉式  ---- 类加载进来,没有对象 只有调用了getInstance方法时候,才会创建对象
+
+```java
+class Single{
+	private Single () {}   //防止new 
+ 	private static Single s = null;     // 将对象静态化  
+   	public static Single getInstance(){       // 返回静态化的方法地址 这样 不管谁引用,都是一个地址
+    	if(s == null){
+            s = new Single();
+            return s;
+    	}
+    }
+}
+```
+
