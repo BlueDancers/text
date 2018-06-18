@@ -1147,3 +1147,243 @@ class Single{
 }
 ```
 
+#### final
+
+1. final可以修饰变量 类
+2. final 修饰的类无法被继承
+3. final 修饰的方法不可以被覆盖
+4. final修饰的变量是一个常量,只能赋值一次          
+5. final 不会默认初始化
+
+为什么使用final修饰变量?
+
+​	因为程序如果一个数据是固定的,那么直接使用这个数据是固定的,那么直接使用这个数据就可以了
+
+但是直接使用阅读性差,所以给该变量起个名字,而且这个变量的值不能变化,所以加上final
+
+写法规范: 常量所有字母都大写,多个单词,中间用_连接
+
+修饰符: 
+
+public: 全局访问
+
+private: 私有修饰符 只能在本类中被使用
+
+static: 静态 通过类名直接访问
+
+final: 将变量修饰为常量的修饰符 
+
+#### 抽象类
+
+不具体即为抽象
+
+特点:
+
+1. 方法只有声明没有实现的时候,该方法就是抽象方法,需要被abstract修饰
+2. 抽象类无法被实例化,因为调用抽象对象没有意义
+3. 抽象类必须有其子类覆盖了所有的抽象方法,该子类才可以实例化,否则,子类也是抽象类
+
+抽象类的问题:
+
+1. 抽象类有构造函数吗?
+
+    有,用于给子类对象进行实例化
+
+2. 抽象类可以不定义抽象方法吗?
+
+   可以,但是很少见,主要用于不让该类创建对象
+
+3. 抽象类关键字不可以个那些关键字共存
+
+   private	因为私有化 子类无法覆盖
+
+   static 	不可以 因为可以直接使用类名调用, 没有意义
+
+   final    	abstract 与 final 的意义相反 一个是必须覆盖,final是一定不可以覆盖
+
+4. 抽象类和一般类的异同点
+
+   - 相同点: 抽象类和一般类都是用来描述事物的,都在内部定义成员
+   - 不同点
+     - 一般类有足够的信息描述事物
+     - 抽象类描述事物的信息不足
+     - 一般类中不能定义抽象方法,只能定义非抽象方法
+     - 抽象类里面可以定义抽象方法,也可以定义非抽象方法
+     - 一般类可以被实例化
+     - 抽象类不可以被实例化
+
+5. 抽象类一定是父类吗?
+
+   是的 因为抽象类不可直接使用,所以一定有子类 才 可以使用
+
+```java
+public class jiekou {
+
+	public static void main(String[] args) {	
+		b b = new b();
+		b.show();
+		b.data();
+	}
+}
+
+
+abstract class a {                   //abstract 创建抽象类
+	public abstract void show();
+	void data() {
+		System.out.println("这里是data");
+	}
+}
+
+interface c {                        //创建一个接口
+	public abstract void show();
+}
+
+interface MM extends c {   //接口接口之间是继承关系
+	public abstract void ss();
+}
+
+class b extends a implements MM {
+	public void show() {
+		System.out.println("haha");
+	}
+
+	public void ss() {
+		System.err.println("抽象类必须重写");		
+	}
+}
+
+```
+
+####接口
+
+定义接口的关键字不是class 是interface
+
+对于接口当中常见的成员 - 这些成员都有固定的修饰符
+
+1. 全局变量 public static final
+2. 抽象对象 public abstract
+
+由此可以看出接口中的成员都是公共权限
+
+类继承接口是implements
+
+```java
+public class jiekou {
+
+	public static void main(String[] args) {	
+		b b = new b();
+		b.show();
+	}
+
+}
+
+
+interface a {
+	public abstract void show();
+}
+
+class b implements a {
+	public void show() {
+		System.out.println("haha");
+	}
+}
+```
+
+java的接口可以多实现
+
+接口的特点:
+
+- 接口是对外暴露的规则
+- 接口是程序的功能拓展
+- 接口的出现 降低了耦合性
+- 接口实现了多实现
+- 类和接口之间是实现关系,而且类可以继承一个类的同时实现多个接口
+- 接口接口之间可以是继承关系
+
+接口是抽象类的异同点
+
+相同点: 
+
+​	都是向上抽取出来的
+
+不同点:
+
+​	抽象类需要被继承,而且只能单继承
+
+​	接口需要被实现,而且可以多实现
+
+​	抽象类中可以定义抽象方法和费抽象方法,子类继承后,可以直接使用非抽象方法
+
+​	接口中只能定义抽象方法,必须由子类去实现
+
+​	抽象类的继承 是基本保持共性的
+
+​	接口的实现是 定义体系外的额外功能
+
+```java
+//接口的使用
+public class bookPc {
+
+	public static void main(String[] args) {
+		Upan u = new Upan();  //功能拓展
+		useUsb(u);
+		useclose(u);
+	}	
+	//使用规则
+	public static void useUsb(USB u) {    //接口类型的引用 用于接收(指向)接口的子类对象
+		u.open();
+	}
+	public static void useclose(USB u) {
+		u.close();
+	}
+}
+
+//暴露的规则
+interface USB {                 
+	public void open();
+	public void close();
+}
+//实现规则
+class Upan implements USB {
+	public void open (){
+		System.out.println("U盘打开");
+	}
+	public void close () {
+		System.out.println("U盘关闭");
+	}
+}
+
+```
+
+#### 多态
+
+```java
+public class duotai1 {
+
+	public static void main(String[] args) {
+		donwu a = new cat();
+		cat b = new cat();
+		// 一个对象 两种形态
+		//猫种类事物即具猫类,又具备dongwu的形态 这就是对象的多态性
+		//简单说就是一个对象对应着不同的类型
+		//多态在代码上的体现: 父类或者接口的引用指向子类的对象
+		
+	}
+
+}
+
+class donwu {
+	donwu () {
+		System.out.println("我是A");
+	}
+}
+
+class cat extends donwu {
+	cat () {
+		System.out.println("我是B");
+	}
+}
+
+
+```
+
