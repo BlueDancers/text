@@ -1361,7 +1361,8 @@ class Upan implements USB {
 public class duotai1 {
 
 	public static void main(String[] args) {
-		donwu a = new cat();
+		donwu a = new cat();    //自动类型提升 猫对象提升为动物 但是特有供能无法访问
+        //作用是限制对特有功能的访问
 		cat b = new cat();
 		// 一个对象 两种形态
 		//猫种类事物即具猫类,又具备dongwu的形态 这就是对象的多态性
@@ -1383,7 +1384,97 @@ class cat extends donwu {
 		System.out.println("我是B");
 	}
 }
-
-
 ```
 
+多态的优点:
+
+- 提高了代码的拓展性,前期定义的代码可以使用后期内容
+
+多态的弊端:
+
+- 前期定义的内容不能使用(调用)后期子类的特有内容
+
+多态的前提:
+
+- 必须有关系,继承 实现
+- 要有覆盖
+
+```java
+public class duotai2 {
+	public static void main(String[] args) {
+		method(new Cat());  //自动类型提升 猫对象提升为动物 但是特有供能无法访问
+        //作用是限制对特有功能的访问
+		method(new Dog());
+	}
+	public static void method(Animal a1) {
+//		Cat a = (Cat)a1;    //如果还想具体动物的猫的特有功能,你可以将该对象进行向下转型,这样就可以使用子类的方法
+//		//对于转型,自始至终都是子类对象在做类型的转换
+//		a.eat();
+//		a.Mouse();
+		
+		if(a1 instanceof Cat) {    //用于判断对象的具体类型 instanceof 在向下转型前用于健壮性的判断
+			Cat a = (Cat)a1;       //向下转型
+			a.eat();
+			a.Mouse();
+		} else if(a1 instanceof Dog) {
+			Dog a = (Dog)a1;
+			a.eat();
+			a.home();
+		}
+	}
+}
+
+abstract class Animal {   //创建抽象类
+	abstract void eat();  //抽象方法
+}
+
+class Cat extends Animal {
+	void eat() {
+		System.out.println("猫粮");
+	}
+	void Mouse() {
+		System.out.println("抓老鼠");
+	}
+}
+
+class Dog extends Animal {
+	void eat() {
+		System.out.println("狗粮");
+	}
+	void home() {
+		System.out.println("看家");
+	}
+}
+```
+
+
+
+多态时成员的特点:
+
+- 成员变量
+
+  - 编译时: 参考引用型变量所属的类是否有调用的成员变量,有,编译通过,没有 编译失败
+  - 运行时: 参考引用型变量所属的类是否有调用的成员变量,并运行该所属类中的成员
+
+  编译和运行都参考等号的左边
+
+- 成员函数
+
+  - 编译时: 参考引用型变量所属的类中的是否有调用的数,有 编译通过 没有 编译失败
+  - 运行时: 参考的是对象那个所属的类是否有调动的函数
+
+  简单来说,编译看左边 运行看右边
+
+- 静态函数
+
+  - 编译时: 参考引用型变量所属的类是否有调用的静态方法
+  - 运行时: 参考引用型变量所属的类是否有调用的静态方法
+
+其实对于静态方法 是不需要对象的,直接用类名调用
+
+#### 内部类
+
+1. 内部类可以直接访问外部类的成员
+2. 外部类要访问内部类,必须建立内部类的对象
+
+分析事物 发现该事物描述中还是有事物,而且这个事物还在访问被描述事物的内容 这就要用内部类
