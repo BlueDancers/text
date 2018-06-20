@@ -439,7 +439,7 @@ public class first {
 	 }
 ```
 
- ### 面向对象
+###面向对象
 
 对象:该类事物实实在在存在的个体
 
@@ -1478,3 +1478,215 @@ class Dog extends Animal {
 2. 外部类要访问内部类,必须建立内部类的对象
 
 分析事物 发现该事物描述中还是有事物,而且这个事物还在访问被描述事物的内容 这就要用内部类
+
+在外部 进行内部类的访问 
+
+```java
+Wai.Lei li = new Wai().new Lei();
+```
+
+内部类 访问 外部变量 以及内部变量
+
+```java
+public class leibulei2 {
+	public static void main(String[] args) {
+		fuqin.erzi e = new fuqin().new erzi();
+		e.show();
+	}
+}
+class fuqin {
+	int a = 1;
+	class erzi {
+		int a = 2;
+		void show () {
+			int a = 3;
+			System.out.println(a);                      //3 在栈里面找
+			System.out.println(this.a);                 //2 在erzi里面找
+			System.out.println(fuqin.this.a);           //1 在父类里面找
+		}
+	}
+}
+
+```
+
+###### 匿名内部类
+
+就是内部类的简写
+
+必要的前提: 内部类必须继承或者实现一个外部类或者接口
+
+匿名内部类: 其实就是一个匿名的子类对象
+
+格式 new父类/接口 (){.......}.方法();
+
+````java
+public class limin {
+
+	public static void main(String[] args) {
+		one one = new one();
+		one.show();
+	}
+
+}
+
+//匿名内部类 可以匿名实现接口
+ abstract class Demo {
+	 abstract void show();
+ }
+
+ class one {
+	 public void show() {
+		 new Demo() {
+			void show() {     
+				System.out.println("这是匿名内部类");
+			}
+		}.show();
+	 }
+ }
+````
+
+接口
+
+```java
+public class limin {
+
+	public static void main(String[] args) {
+		three t = new three();
+		t.show();
+	}
+
+}
+
+ interface jiekou {
+	 void show();
+ }
+ 
+ class three {
+	 void show() {
+		 new jiekou() {
+			 public void show () {
+				 System.out.println("匿名内部类实现接口");
+			 }
+		 }.show();
+	 }
+ }
+
+```
+
+匿名内部类的细节
+
+```java
+public class leibulei3 {
+
+	class one {
+		void show () {
+			new Object() {  // 这里相当于  class a extends Object  
+				void zz () {
+					System.out.println("这是继承了Object的匿名内部类");
+				}
+			}.zz();
+			//o.show();    //这里,没办法进行show的直接调用  因为 show 这和方法已经向上转型 无法通过变量调用
+		}
+	}
+	
+	public static void main(String[] args) {
+		//one a = new one();   在主函数里面因为是静态的,所以没办法去new 非静态的内部类
+		new leibulei3().score();
+	}
+	
+	public void score () {
+		one o = new one();
+		o.show();
+	} 
+}
+```
+
+####对象的初始化过程
+
+1. 进入子类构造函数
+2. 父类构造函数初始化
+3. 执行父类构造函数的方法
+4. 显式初始化 
+5. 运行构造代码块
+
+```java
+public class chushuhua {
+
+	public static void main(String[] args) {
+		Zi z = new Zi();
+		z.show();
+	}
+}
+
+class Fu {
+	Fu () {
+		System.out.println("父类初始化");
+		show();
+	}
+	void show () {
+		System.out.println("haha");
+	}
+}
+
+class Zi extends Fu {
+	int num = 1;
+	{
+		System.out.println("局部代码块"+num);
+	}
+	Zi () {
+		super();   /*	--(1).进入子类构造函数,(2)父类构造函数初始化  Fu构造函数执行
+						-- show()执行(3) 但是 子类super没执行完之前 num没有完成初始化  所以是 0
+						这时候 (4)--显示初始化--
+						--(5)构造代码块
+						--子类构造函数初始化完成
+		 			*/
+		System.out.println("子类初始化");
+	}
+	void show () {
+		System.out.println("num="+num);
+	}
+}
+```
+
+### 异常
+
+运行时期发生的不正常情况
+
+在java中用类的形式对不正常情况进行描述和封装对象,描述不正常的类,也被称为异常类
+
+将正常流程代码和问题处理代码结合
+
+不同的问题用不同的类进行描述,比如角标越界,空指针等等
+
+最终(不正常情况)就分成两大类
+
+Throable  无论是errot 还是
+
+- 不可处理的 Errot Exception 都抛出 让调用者知道 处理
+- 可以处理的 Exception
+
+自定义异常
+
+```java
+public class one {
+	public static void main(String[] args) throws Exception {
+		int[] arr  = new int[3];
+		Demo d = new Demo();
+		d.method(arr, -2);
+	}
+}
+
+class Demo {
+	public int method(int arr[],int index) throws Exception {
+		if (arr == null) {
+			throw new NullPointerException("引用对象不可以为空");
+		} else if (index>=arr.length) {
+			throw new ArrayIndexOutOfBoundsException("角标越界");
+		} else if (index<0) {
+			throw new ArrayIndexOutOfBoundsException("不可以使用负值作为角标");
+		}
+		return arr[index];
+	}
+}
+```
+
