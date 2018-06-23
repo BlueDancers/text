@@ -1660,33 +1660,300 @@ class Zi extends Fu {
 
 最终(不正常情况)就分成两大类
 
-Throable  无论是errot 还是
+Throwable  无论是errot 还是 Exception 都抛出 让调用者知道并且处理  也只有Throwable可以抛出
 
-- 不可处理的 Errot Exception 都抛出 让调用者知道 处理
+​				//该体系的特点就是Throwable及其所有的子类都具有可抛性
+
+​				通过关键字throw throws 凡是通过这两个关键字所调用的类和对对象都具有可抛性
+
+- 不可处理的 Errot    --- 由jvm抛出的严重性问题,不针对处理 直接修改程序
 - 可以处理的 Exception
 
-自定义异常
+子类的后缀名 都是用其父类名作为后缀,阅读性很强
+
+**自定义异常**
 
 ```java
 public class one {
 	public static void main(String[] args) throws Exception {
 		int[] arr  = new int[3];
 		Demo d = new Demo();
-		d.method(arr, -2);
+		System.out.println(d.method(arr,-1));
 	}
 }
 
 class Demo {
-	public int method(int arr[],int index) throws Exception {
+	public int method(int arr[],int index) throws Exception {  //为什么要 throws Exception 因为声明函数
 		if (arr == null) {
 			throw new NullPointerException("引用对象不可以为空");
 		} else if (index>=arr.length) {
 			throw new ArrayIndexOutOfBoundsException("角标越界");
 		} else if (index<0) {
-			throw new ArrayIndexOutOfBoundsException("不可以使用负值作为角标");
+			throw new FushuIndexException("角标变成负数了");
 		}
 		return arr[index];
 	}
 }
+
+class FushuIndexException extends Exception {   //自定义异常要继承异常类 添加构造函数
+	public FushuIndexException(String msg) {
+		super(msg);   //这里不需要打印 因为 exception 这和类已经把方法写好了 所以直接传就行了
+	}
+}
+
+
+//异常最后报错 说明 语法已经是没有错误的了
 ```
 
+异常的分类:
+
+1. 编译时被检测的异常,也就是EXception和其子类都是,除了特殊子类RuntimeException 体系
+
+   - 这种问题一旦出现,希望在编译时就进行检测,让这种问题有对应的处理方式,这样的问题就可以针对性的解决
+
+2. 编译时不检测异常,也就是exception中的runtimeException和其子类 
+
+   - 这种问题的发生,无法让功能继续,运算无法进行,更多是因为调用者的原因导致的而或者引发了内部状态的改变导致的,那么这样的问题一般不处理,直接编译通过,在运行时候,让调用者调用时程序停止,对代码进行修正
+
+   比如程序没错 但是参数错的 这样的错误不会被检测,或者只有运行的时候才能看到错
+
+```java
+class FushuIndexException extends RuntimeException {   //改成Runtime 就无需声明异常了
+	public FushuIndexException(String msg) {
+		super(msg);   //这里不需要打印 因为 exception 这和类已经把方法写好了 所以直接传就行了
+	}
+}
+```
+
+
+
+自定义异常的时候 要么继承 Exception 要么继承 RuntimeException
+
+throws 使用在函数上,抛出异常类,可以一次抛出多个,用逗号隔开
+
+throw   抛出的是异常对象
+
+#####try catch
+
+​	对异常情况的针对性处理方式
+
+try {
+
+​	需要被检测的代码
+
+} catch ( 异常类 变量 ) {     该变量用于接受发生的异常对象
+
+​	处理异常的代码
+
+} finally {
+
+​	无论代码时候正常都运行的代码
+
+}
+
+```java
+package Exception;
+
+public class one {
+	public static void main(String[] args) throws FushuIndexException {
+		int[] arr  = new int[3];
+		Demo d = new Demo();
+		try {                                     //可以解决就try 不能解决就抛出
+			int num = d.method(arr,-1);
+			System.out.println(num);
+		} catch (FushuIndexException e) {   //FushuIndexException e = new FushuIndexException()  相当于这样
+			System.out.println(e.getMessage());
+			e.printStackTrace();  //jvm默认的异常处理机制 就是调用printStackTrace 
+		} catch (NullPointerException e) {
+			System.out.println(e.toString());
+		} catch (Exception e) {    //以上catch 会捕捉上面catch 没有的情况  多catch 父类catch放在最下面
+			e.printStackTrace();
+		}
+	}
+}
+
+class Demo {
+	public int method(int arr[],int index) throws FushuIndexException {  //为什么要 throws Exception 因为声明函数
+		if (arr == null) {
+			throw new NullPointerException("引用对象不可以为空");
+		} else if (index>=arr.length) {
+			throw new ArrayIndexOutOfBoundsException("角标越界");
+		} else if (index<0) {
+			throw new FushuIndexException("角标变成负数了");
+		}
+		return arr[index];
+	}
+}
+
+class FushuIndexException extends Exception {   //自定义异常要继承异常类 添加构造函数
+	public FushuIndexException(String msg) {
+		super(msg);   //这里不需要打印 因为 exception 这和类已经把方法写好了 所以直接传就行了
+	}
+}
+
+
+//异常最后报错 说明 语法已经是没有错误的了
+```
+
+异常函数处理原则
+
+1. 函数内容如果抛出需要检测的异常,那么函数上必须要声明,或者在函数内部进行try catch 捕捉 ,否则编译失败
+
+2. 如果调用到了声明异常的函数,要么 try catch 要么 抛出(throws) 否则编译失败
+
+3. 什么时候catch 什么时候 throws ? 
+
+   功能内容可以解决 用catch;
+
+    解决不了的 用throws告诉调用者
+
+4. 一个功能如果抛出多个异常,那么调用时,必须有对应多个catch进行针对性的处理
+
+   内部有几个需要检测的异常,就抛出几个异常,抛出几个,就catch几个
+
+finally 就算try catch里面return 也依旧会执行finally里面的代码
+
+只有一种情况使得finally不执行 System.exit();
+
+可以有try finally 这样的组合,但是要抛出
+
+异常的应用
+
+```java
+public class two {
+
+	public static void main(String[] args) throws NanpinException,Senbinexception {
+		Teacher t = new Teacher("毕老师");
+		try {
+			t.shangle();
+		} catch (NoplanException e) {
+			System.out.println("学校表示:..............换老师");
+		}
+		
+	}
+}
+
+
+
+class Teacher {
+	private String name;
+	private Comp comp = new Comp();
+	public Teacher(String name){
+		this.name = name;
+	}
+	public void shangle () throws NanpinException,Senbinexception, NoplanException  {
+		try {    //检查电脑时候有问题
+			
+			comp.comp();   
+			System.out.println(name+"开始上课");
+			
+		} catch (NanpinException e) {
+			
+			System.out.println(e.getMessage());
+			reset();
+			shangle();
+		} catch (Senbinexception e) {
+			System.out.println(e.getMessage());
+			throw new NoplanException();        //捕获错误 同时抛出另外的错误
+		}
+	}
+	public void reset(){
+		comp.reset();
+	}
+}
+
+
+class Comp {
+	int num = 2;
+	public void comp () throws NanpinException,Senbinexception {
+		if(num == 0) {
+			System.out.println("电脑运行");
+		}else if(num == 1) {
+			throw new NanpinException("电脑蓝屏了!!");
+		}else if(num == 2) {
+			throw new Senbinexception("老师生病了!!");
+		}
+	}
+	
+	public void reset () {
+		num = 0;
+		System.out.println("电脑重启");
+	}
+}
+
+class NanpinException extends Exception {
+	public NanpinException(String msg) {
+		super(msg);
+	}
+}
+
+class Senbinexception extends Exception {
+	public Senbinexception (String msg) {
+		super(msg);
+	}
+}
+class NoplanException extends Exception {
+	public NoplanException () {}
+}
+
+```
+
+异常的注意事项
+
+1. 子类在覆盖父类方法的时候,父类方法如果抛出异常,那么子类的方法只能抛出父类的异常或者该异常的子类
+2. 如果父类抛出多个异常,那么子类只能抛出父类的异常的子集
+
+简单说     子类覆盖父类只能抛出父类的异常或者子集
+
+​		如果父类的方法没有抛出异常,那么子类覆盖时绝对不能抛,只能try
+
+####Object类的方法
+
+所有类的上帝 Object是不断抽取而来,所有对象都有的共性内容
+
+#####equals hashCode getClass toString 
+
+```java
+package ss;
+
+public class Object1 {
+
+	public static void main(String[] args) {
+		Person p1 = new Person(20);
+		Person p2 = new Person(20);
+		Person p3 = p1;
+		System.out.println(p1.equals(p3));  //比较的是内存地址
+		System.out.println(Integer.toHexString(p1.hashCode()));    
+		//hashCode 获取对象的在内存里面的hashCode值
+		System.out.println(p1.getClass().getName());  //获取   
+		System.out.println(p1.getClass().getName()+"$"+Integer.toHexString(p1.hashCode()));  //内存地址
+	}
+
+}
+class Person extends Object {
+	private int age;
+	public Person(int age) {
+		this.age = age;
+	}
+	public boolean equals(Object age) {   //重写equals 方法 
+		if(!(age instanceof Person)) {
+			throw new NomanException("不是数字");    //自定义异常
+		}
+		Person p = (Person)age;
+		return this.age == p.age;
+	}
+//	public int hashCode () {          	  //重写 hashCode方法,意味着对象的内存地址发生变化
+//		return age;
+//	}
+	public String toString () {           //重写toString   原本是返回该对象的字符串表示
+		return "Person"+age;
+	}
+}
+
+class NomanException extends RuntimeException {
+	NomanException (String msg) {
+		super(msg);
+	}
+}
+
+```
