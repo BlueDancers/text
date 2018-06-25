@@ -1957,3 +1957,55 @@ class NomanException extends RuntimeException {
 }
 
 ```
+
+
+#### 面向对象 - 包
+
+package 包名所有字母都小写
+
+-d <目录>                    指定放置生成的类文件的位置
+
+```
+package mypackage        //定义包名  在文件系统里面即使文件夹名
+```
+
+javac -d  .one.java    这样class 文件就会生成到当前目录里面去
+
+运行的时候 就是 java mypackage.one
+
+
+
+包与包的访问
+
+ 包与包之间的类进行访问,被访问的包必须是public的,被访问的包中的类的方法也必须是public 
+
+```
+public		最高权限 包 类 子类 不同的包都可以访问到
+protected 	可以在同一个包 同一个类 子类里面访问 但是 不可以在不同的包里面访问
+default  	可以在同一个类里面 也可以在同一个包里面访问 但是 在子类 以及不同的包里面无法访问
+private 	只能在同一个类里面访问
+```
+
+
+
+import
+
+```java
+package ss;
+
+import score.*;   //导入score包里面的Superdemo类   * 是导入所有类
+//导包的原则 用到那个类 就导入那个类  import 就是为了简化类名的书写
+
+public class Object2 extends score.Superdemo {
+
+	public static void main(String[] args) {
+		new Object2().geta();
+		Superdemo s = new Superdemo();   //这种情况下 protected 属性 只能在被继承的时候 使用
+		s.geta();
+	}
+	
+}
+
+```
+
+jar 包就是压缩后的class包
