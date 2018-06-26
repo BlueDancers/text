@@ -145,3 +145,195 @@ class run1 implements Runnable {
 
 
 
+第二种方式实现的细节
+
+为什么Thread里面传值就可以运行传值的run方法?
+
+```java
+//大致实现方法
+class Thread {
+	private Runnable r;
+	Thread () {}
+	Thread (Runnable r) {
+        this.r = r;        //将实现接口的方法地址传进去
+	}
+	public void run() {
+        if(r !== null){
+        	r.run();     
+        }
+	}
+	public void start() {
+        run();
+	}
+}
+```
+
+Runnable的好处
+
+继承Thread会继承所有类 我们不需要这样 而我们只需要线程run这个任务,
+所以Runnable的出现将线程的任务进行了对象的封装
+
+1. 将线程的任务从线程的子类中分离出来,进行单独的封装,按面向对象的思想将任务封装成对象
+2. 避免了java单继承的局限性
+
+所以创建线程第二种比较常见
+
+### 线程的安全问题
+
+线程安全问题的原因
+
+1. 多个线程在操共享数据
+
+2. 操作共享数据的线程代码有多条
+
+  当一个线程在执行操作共享数据的多条代码过程中,其他线程参与了运算,就会导致线程等等安全问题(异步)
+
+解决思路 
+
+​	将异步变成同步,当线程执行代码的时候,其他线程不可以参与运算
+
+在java中有同步代码块就可以解决这个问题 
+
+```
+synchronized (对象) {
+    需要同步的代码;
+}
+```
+
+同步的好处: 解决了线程的安全问题
+
+同步的弊端: 相对降低了效率,因为同步外的线程的都会判断同步锁
+
+同步的前提: 同步中必须有多个线程并使用同一个锁
+
+#### 多线程应用 - 买票
+
+```java
+
+/*需求 买票
+ * 
+ * */
+public class maipiao {
+
+	public static void main(String[] args) {
+		Ticket t1 = new Ticket();
+		Ticket t2 = new Ticket();
+		Ticket t3 = new Ticket();
+		Ticket t4 = new Ticket();
+		t1.start();
+		t2.start();
+		t3.start();
+		t4.start();
+	}
+}
+
+class Ticket extends Thread {
+	private static int num = 100; //这里静态化可以解决这里的问题   但是这样就没办法开同一条一样的线程
+	//private int num = 100;   
+	public void sale () {
+		while (true) {
+			if(num > 0) {
+				System.out.println("当前窗口"+Thread.currentThread().getName()+"卖出票"+num--);
+			}else {
+				return;
+			}
+			
+		}
+	}
+	public void run() {
+		sale();
+	}
+}
+```
+
+但是这里有安全隐患,因为一旦线程延迟 就会造成信息输出不正常
+
+#### 同步代码块
+
+```java
+
+public class maipiaoRunnable {
+
+	public static void main(String[] args) {
+		font f = new font();
+		Thread t1 = new Thread(f);
+		Thread t2 = new Thread(f);
+		Thread t3 = new Thread(f);
+		Thread t4 = new Thread(f);
+		t1.start();
+		t2.start();
+		t3.start();
+		t4.start();
+	}
+
+}
+
+
+class font implements Runnable  {
+	private int num = 100;  //100张票
+	Object obj  = new Object();
+	
+	public void run() {
+		while(true) {
+			synchronized (obj) {     //同步代码块 
+				if(num>0) {
+					try {
+						Thread.sleep(10);  //线程安全隐患  会打印到-1 -2 等等 
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					System.out.println("当前窗口"+Thread.currentThread().getName()+"卖出票"+num--);	
+				}else {
+					return;
+				}
+			}
+		}
+	}
+}
+```
+
+这里的同步代码块解决了这和异步问题 将多线程变成同步
+
+####同步函数
+
+```java
+
+public class sync {
+
+	public static void main(String[] args) {
+		Cus c = new Cus();
+		Thread t1 = new Thread(c);
+		Thread t2 = new Thread(c);
+		t1.start();
+		t2.start();
+	}
+
+}
+//需求 使用两个 每个都到银行存一百 存3次
+
+class Bank {
+	private int num = 0;
+	public void add(int sum) {
+		num = num + sum;   //由于停顿了10毫秒 上一个以及完成运算变成100 但是因为这里的10毫秒 
+						   //第一个还没有打印,这时候 第二个来了,num变成了200 第一次才睡醒 但是num已经不是100 而是 打印 200
+		try {Thread.sleep(10);}catch (Exception e) {}
+		System.out.println("当前账户余额"+num);
+	}	
+}
+
+class Cus implements Runnable {    
+	Bank b = new Bank();
+	public void run () {     //同步函数 
+		for (int i = 0; i < 3; i++) { 
+			b.add(100);
+		}
+	}
+}
+```
+
+同步函数和同步代码块一样的功能,但是写法更加优雅 
+
+``` java
+public synchronized void add() {}
+```
+
