@@ -337,3 +337,238 @@ class Cus implements Runnable {
 public synchronized void add() {}
 ```
 
+####验证同步函数的锁
+
+```java
+
+public class maipiaop {
+
+	public static void main(String[] args) {
+		m m = new m();
+		Thread t1 = new Thread(m);
+		System.out.println("m="+m);        //打印出地址 为m=m@7852e922 
+		Thread t2 = new Thread(m);
+		t1.start();
+		try {Thread.sleep(20);}catch(Exception e) {}
+		m.flag = false;
+		t2.start();
+	}
+
+}
+
+
+
+class m implements Runnable {
+	private int num = 100;
+	boolean flag = true;
+	Object obj = new Object();
+	public void run () {
+		System.out.println("this="+this);    //打印出地址为this=m@7852e922 由此可见 this 是同步函数的同步锁
+		if(flag) {
+			while(true) {
+				show();	
+			}
+		}else {
+			while(true) {
+				synchronized (this) {
+					if(num > 0) {
+						try {Thread.sleep(10);}catch(Exception e) {}
+						System.out.println("当前窗口"+Thread.currentThread().getName()+"卖出票线程1---"+num--);	
+					}else {
+						System.exit(0);
+					}	
+				}
+			}
+		}
+	}
+	
+	public synchronized void show() {  //同步函数的锁是this
+		if(num > 0) {
+			try {Thread.sleep(10);}catch(Exception e) {}
+			System.out.println("当前窗口"+Thread.currentThread().getName()+"卖出票线程2---"+num--);	
+		}else {
+			System.exit(0);
+		}
+	}
+}
+```
+
+#####同步函数和同步代码块的区别
+
+同步函数的使用的锁是固定的this
+
+同步代码块使用的锁是任意的对象 建议使用同步代码块 
+
+#### 验证静态同步函数的锁
+
+静态的同步函数使用的锁是 该函数所属的字节码文件对象
+
+可以使用getClass 方法获取 也可以使用当前类名.class 来表示
+
+```java
+
+public class maipiaop {
+
+	public static void main(String[] args) {
+		m m = new m();
+		Thread t1 = new Thread(m);
+		Thread t2 = new Thread(m);
+		t1.start();
+		try {Thread.sleep(20);}catch(Exception e) {}
+		m.flag = false;
+		t2.start();
+	}
+
+}
+
+
+
+class m implements Runnable {
+	private static int num = 100;
+	boolean flag = true;
+	Object obj = new Object();
+	public void run () {
+		System.out.println("我是同步代码块使用的锁---"+m.class);    //class m   
+		if(flag) {
+			while(true) {
+				show();	
+			}
+		}else {
+			while(true) {
+				synchronized (m.class) {
+					if(num > 0) {
+						try {Thread.sleep(10);}catch(Exception e) {}
+						System.out.println("当前窗口"+Thread.currentThread().getName()+"卖出票线程1---"+num--);	
+					}else {
+						System.exit(0);
+					}	
+				}
+				
+			}
+		}
+		
+		
+	}
+	
+	public static synchronized void show() {  //同步函数的锁是this
+		System.out.println("我是静态的锁------"+m.class);    //class m
+		if(num > 0) {
+			try {Thread.sleep(10);}catch(Exception e) {}
+			System.out.println("当前窗口"+Thread.currentThread().getName()+"卖出票线程2---"+num--);	
+		}else {
+			System.exit(0);
+		}
+	}
+}
+```
+
+###单例模式的多线程
+
+```java
+
+public class danli {
+
+	public static void main(String[] args) {
+		System.out.println(Single.get().num);
+
+	}
+
+}
+
+class Single {
+	public static int num = 1;
+	private static final Single s = new Single();
+	private Single() {}
+	public static Single get() {
+		return s;                 //因为这里的s已经固定死了 不管如何多线程,都会返回一个对象不会出现问题 
+	}
+}
+
+class Singles {
+	public static int num = 1;
+	private static Singles s = null;
+	private Singles () {}
+	public static Singles get() {
+		if(s == null) {
+			synchronized (Singles.class) {   //这时会将线程卡主 线程2进来的时候 直接返回
+				if(s == null) {                      //这里加入多线程 会导致线程重叠的情况
+					s= new Singles();
+				}		
+			}
+		}
+		return s;
+	}
+}
+```
+
+### 死锁
+
+```java
+
+public class sisuo {
+	public static void main(String[] args) {
+		Test t1 = new Test(true);
+		Test t2 = new Test(false);
+		new Thread(t1,"one").start();
+		new Thread(t2,"two").start();
+
+	}
+}
+
+class Test implements Runnable{
+	public static Object one = new Object();
+	public static Object two = new Object();
+	public boolean flag;
+	Test (boolean flag){
+		
+		this.flag = flag;
+		
+	}
+	public void run () {
+		if(flag) {
+			while(true) {
+				synchronized (one) {
+					System.out.println(Thread.currentThread().getName()+"---if---外面"+one);
+					synchronized (two) {
+						System.out.println(Thread.currentThread().getName()+"---if---里面"+two);
+					}
+				}
+			}
+		}else {
+			while(true) {
+					synchronized (two) {
+						System.out.println(Thread.currentThread().getName()+"---else---外面"+one);
+						synchronized (one) {
+							System.out.println(Thread.currentThread().getName()+"---else---里面"+two);
+						}
+					}
+				}
+			}	
+		}
+	}
+
+class MyLockk
+{
+	public static final Object locka = new Object();
+	public static final Object lockb = new Object();
+}
+```
+
+###线程间通讯
+
+多线程处理同一资源,但是任务不同
+
+等待/唤醒机制 - 方法
+
+1. wait()            让线程处于冻结状态  释放cpu执行权 被wait的线程会被储存到线程容器里面
+2. notify()          唤醒线程容器里面的线程
+3. notifyAll()      唤醒线程容器里面的所有线程
+
+这些方法都必须定义在同步里面,因为这些都是要用于操作线程状态的方法
+
+必须明确到底操作的是那个锁
+
+为什么操作线程的方法定义在object里面?
+
+答:因为这些方法是监视器的方法 ,监视器就是一个锁,锁可以是任意的对象
+
