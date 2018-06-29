@@ -572,3 +572,508 @@ class MyLockk
 
 答:因为这些方法是监视器的方法 ,监视器就是一个锁,锁可以是任意的对象
 
+#### 多线程通信示例
+
+```java
+
+
+public class tiongxin1 {
+
+	public static void main(String[] args) {
+		Resource r = new Resource();
+		Input i = new Input(r);
+		Output o = new Output(r);
+		Thread t1 = new Thread(i);
+		Thread t2 = new Thread(o);
+		t1.start();
+		t2.start();
+	}
+}
+
+class Resource {
+	private String name;
+	private int age;
+	private boolean flag = false;
+	
+	public synchronized void Input (String name,int age) {
+ 
+			this.name = name;
+			this.age = age;
+			flag = true;
+			this.notify();       //开始之前进行判断 没有值 就唤醒线程
+			try{this.wait();}catch(Exception e) {}  //假如r里面有值,就会暂停线程,等待输出线程
+		
+//		if(!flag) 
+//			this.name = name;
+//			System.out.println("111111111111");
+//			this.age = age;
+//			flag = true;
+//			this.notify();
+//			System.out.println("22222222");
+//		try{this.wait();}catch(Exception e) {}
+	}
+	public synchronized void Output() {
+		if(flag) {
+			System.out.println("name:"+this.name+"-----"+"age:"+this.age);
+			flag = false;
+			this.notify();
+		}else {
+			try{this.wait();}catch(Exception e) {}
+		}
+	}
+}
+
+class Input implements Runnable {
+	Resource r;
+	Input (Resource r) {
+		this.r = r;               //将对象以参数的形式传进来
+	}
+	public void run () {
+		int x = 0;
+		while(true) {
+			if(x == 0) {
+				r.Input("hahahaha",20);
+			}else {
+				r.Input("张三",40);
+			}
+			x = (x+1)%2;
+		}
+	}
+}
+
+class Output implements Runnable {
+	Resource r;
+	Output (Resource r) {
+		this.r = r;               //将对象以参数的形式传进来
+	}
+	public void run () {
+		while(true) {
+			r.Output();
+		}	
+	}
+}
+```
+
+#### 多生产者 多消费者
+
+生产者消费者的问题
+
+if判断标记只能判断一次,会导致不该运行的代码运行,出现数据错误的情况
+
+while判断标记,解决了线程获取执行权后,是否符合条件去运行代码
+
+notify: 只能唤醒一个线程,如果唤醒了生产者的线程,就毫无意义,而且while加notify产生死锁
+
+notifyAll 唤醒所有线程 解决这里的死锁
+
+```java
+/*
+ * 生产者   消费者 
+ * 
+ * */
+public class tongxin2 {
+
+	public static void main(String[] args) {
+		Resrouce r = new Resrouce();
+		Producer p = new Producer(r);
+		Consumer c = new Consumer(r);
+		Thread t1 = new Thread(p);
+		Thread t2 = new Thread(c);
+		Thread t3 = new Thread(p);
+		Thread t4 = new Thread(c);
+		t1.start();
+		t3.start();
+		t2.start();
+		t4.start();
+		
+	}
+
+}
+
+class Producer implements Runnable {
+	private Resrouce r;
+	Producer (Resrouce r) {
+		 this.r = r; 
+	}
+	public void run () {
+		while(true) {
+			r.set("烤鸭");
+		}
+	}
+}
+
+class Consumer implements Runnable {
+	private Resrouce r;
+	Consumer (Resrouce r) {
+		this.r = r;
+	}
+	public void run() {
+		while(true) {
+			r.out();
+		}
+	}
+}
+
+class Resrouce {
+	private String name;
+	private int count = 1;
+	boolean flag = false;
+	public synchronized void set (String name) {
+		while(flag) {     //if不可以
+			try {this.wait();} catch (Exception e) {}   //线程等待
+		}
+				
+				
+			this.name = name + count;
+			count++;
+			System.out.println("生产了"+Thread.currentThread().getName()+"---"+this.name);
+			flag = true;
+			notify();        //唤醒线程
+			notify(); 
+
+	}
+	public synchronized void out() {
+		while(!flag) {
+			try {this.wait();} catch (Exception e) {}   //线程等待
+		}
+				
+				
+			System.out.println("消费了"+Thread.currentThread().getName()+"---------"+this.name);
+			flag = false;
+			notify();        //唤醒线程
+			notify(); 
+
+		
+	}
+}
+
+```
+
+ ![](http://on7r0tqgu.bkt.clouddn.com/FhPrcD0vzQdmQN8j2mR_ufCQobd4.png )
+
+使用 java 1.5的锁对象重写上面代码
+
+Lock接口: lock的出现替代了同步代码块 以及同步函数 将同步的隐式操作变成显式操作,同时更加灵活,可以一个锁上加上多个监视器
+
+lock() 获取锁
+
+unlock 释放锁 通常定义在finally里面
+
+
+
+Condition接口: 出现替代了Object方法中的wait notify notifyAll方法
+
+​			将这些监视器方法单独进行了封装,变成Condition监视器对象,可以任意锁进行组合
+
+await();
+
+signal();
+
+signalAll();
+
+```java
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+/*
+ * 生产者   消费者 
+ * 
+ * */
+public class tongxin2 {
+
+	public static void main(String[] args) {
+		Resrouce r = new Resrouce();
+		Producer p = new Producer(r);
+		Consumer c = new Consumer(r);
+		Thread t1 = new Thread(p);
+		Thread t2 = new Thread(c);
+		Thread t3 = new Thread(p);
+		Thread t4 = new Thread(c);
+		t1.start();
+		t3.start();
+		t2.start();
+		t4.start();
+		
+	}
+}
+
+class Producer implements Runnable {
+	private Resrouce r;
+	Producer (Resrouce r) {
+		 this.r = r; 
+	}
+	public void run () {
+		while(true) {
+			r.set("烤鸭");
+		}
+	}
+}
+
+class Consumer implements Runnable {
+	private Resrouce r;
+	Consumer (Resrouce r) {
+		this.r = r;
+	}
+	public void run() {
+		while(true) {
+			r.out();
+		}
+	}
+}
+
+class Resrouce {
+	private String name;
+	private int count = 1;
+	boolean flag = false;
+	//创建一个锁对象
+	Lock lock = new ReentrantLock();      //一个可重入互斥Lock具有与使用synchronized方法和语句访问的隐式监视锁相同的基本行为和语义，但具有扩展功能。
+	//通过已有的锁获取该锁上面的监视器对象
+	Condition con = lock.newCondition();
+	
+	public void set (String name) {
+		lock.lock();
+		try {
+			while(flag) {
+				try {con.await();} catch (Exception e) {}   //线程等待
+			}
+				this.name = name + count;
+				count++;
+				System.out.println("生产了"+Thread.currentThread().getName()+"---"+this.name);
+				flag = true;
+				con.signalAll();       //唤醒线程
+		} finally {
+			lock.unlock();
+		}
+
+	}
+	public void out() {
+		lock.lock();    
+			try {
+				while(!flag) {
+					try {con.await();} catch (Exception e) {}   //线程等待
+				}
+				
+					System.out.println("消费了"+Thread.currentThread().getName()+"---------"+this.name);
+					flag = false;
+					con.signalAll();             //唤醒线程
+			} finally {
+				lock.unlock();
+			}
+	}
+}
+```
+
+用Condition来分别监视线程
+
+```java
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+/*
+ * 生产者   消费者 
+ * 
+ * */
+public class tongxin2 {
+
+	public static void main(String[] args) {
+		Resrouce r = new Resrouce();
+		Producer p = new Producer(r);
+		Consumer c = new Consumer(r);
+		Thread t1 = new Thread(p);
+		Thread t2 = new Thread(c);
+		Thread t3 = new Thread(p);
+		Thread t4 = new Thread(c);
+		t1.start();
+		t3.start();
+		t2.start();
+		t4.start();
+		
+	}
+}
+
+class Producer implements Runnable {
+	private Resrouce r;
+	Producer (Resrouce r) {
+		 this.r = r; 
+	}
+	public void run () {
+		while(true) {
+			r.set("烤鸭");
+		}
+	}
+}
+
+class Consumer implements Runnable {
+	private Resrouce r;
+	Consumer (Resrouce r) {
+		this.r = r;
+	}
+	public void run() {
+		while(true) {
+			r.out();
+		}
+	}
+}
+
+class Resrouce {
+	private String name;
+	private int count = 1;
+	boolean flag = false;
+	//创建一个锁对象
+	Lock lock = new ReentrantLock();      //一个可重入互斥Lock具有与使用synchronized方法和语句访问的隐式监视锁相同的基本行为和语义，但具有扩展功能。
+//	//通过已有的锁获取该锁上面的监视器对象
+//	Condition con = lock.newCondition();'
+	//通过已经有的锁获取两组监视器,一组监视生产者,一组监视消费者
+	Condition producer_con = lock.newCondition();       //生产者锁
+	Condition consumer_one = lock.newCondition();       //消费者锁
+	
+	public void set (String name) {
+		lock.lock();
+		try {
+			while(flag) {
+				try {producer_con.await();} catch (Exception e) {}   //线程等待
+			}
+				this.name = name + count;
+				count++;
+				System.out.println("生产了"+Thread.currentThread().getName()+"---"+this.name);
+				flag = true;
+				consumer_one.signal();       //唤醒线程
+		} finally {
+			lock.unlock();
+		}
+
+	}
+	public void out() {
+		lock.lock();    
+			try {
+				while(!flag) {
+					try {consumer_one.await();} catch (Exception e) {}   //线程等待
+				}
+				
+					System.out.println("消费了"+Thread.currentThread().getName()+"---------"+this.name);
+					flag = false;
+					producer_con.signalAll();             //唤醒线程
+			} finally {
+				lock.unlock();
+			}
+	}
+}
+```
+
+#### wait 和 sleep的区别
+
+1. wait可以不指定时间 sleep必须指定时间
+2. 在同步里面,对于cpu的执行权和锁的处理不一样
+   1. wait 释放执行权,释放锁
+   2. sleep 释放执行权 不释放锁
+
+
+
+#### 停止线程
+
+1. stop方法(弃用)
+2. run方法结束
+
+怎么控制线程的任务结束?
+
+任务里面都用循环结构,只要控制住循环就可以结束任务
+
+控制循环通常用 标记
+
+````java
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class tinzhixianchen {
+
+	public static void main(String[] args) {
+		tinzhi t = new tinzhi();
+		Thread t1 = new Thread(t);
+		Thread t2 = new Thread(t);
+		t1.start();
+		t2.start();
+		int num = 50;
+		for(;;) {
+			if(--num == 0) {
+				t.flag = false;
+				break;
+			}
+			System.out.println(num+"后停止线程");
+		}
+		System.out.println("over");
+	}
+}
+
+
+class tinzhi  implements Runnable {
+	public boolean flag = true;
+	public void run() {
+		while(flag) {
+				System.out.println("线程开启");
+		}
+	}
+}
+````
+
+
+
+如果线程处于冻结状态,无法读取标记 ,如何结束线程?
+
+可以使用interrupt()方法将线程从冻结里面强制恢复到运行状态里面,让线程具备cpu的执行权,但是强制动作会抛出异常,要捕获
+
+```java
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class tinzhixianchen {
+
+	public static void main(String[] args) {
+		tinzhi t = new tinzhi();
+		Thread t1 = new Thread(t);
+		Thread t2 = new Thread(t);
+		t1.start();
+		t2.start();
+		int num = 50;
+		for(;;) {
+			if(--num == 0) {
+				//t.flag = false;
+				t1.interrupt();         //将线程从冻结里面强制恢复到运行状态里面
+				t2.interrupt();
+				break;
+			}
+			System.out.println(num+"后停止线程");
+		}
+		System.out.println("over");
+	}
+}
+
+
+class tinzhi  implements Runnable {
+	public boolean flag = true;
+	Lock lock = new ReentrantLock();
+	Condition con = lock.newCondition(); 
+	public void run() {
+		lock.lock();
+		while(flag) {
+			try {
+				con.await();
+			} catch (InterruptedException e) {   //强制中断会发生中断异常
+				// TODO Auto-generated catch block
+				System.out.println("强制停止");
+				flag = false;
+			}
+			System.out.println("线程开启");
+		}
+		lock.unlock();
+	}
+}
+```
+
+
+
