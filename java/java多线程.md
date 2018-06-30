@@ -1075,5 +1075,310 @@ class tinzhi  implements Runnable {
 }
 ```
 
+#### 线程的调度
 
+##### 线程优先级
+
+通过Thread类的setPriority() 方法来对线程优先级进行设置
+
+参数Thread提供了静态参数变量  
+
+10 Thread.MAX_PRIORITY
+
+5 Thread.NORM_PRIORITY 
+
+1 Thread.MIN_PRIORITY 
+
+##### join() 线程插队
+
+当在某个线程里面调用其他线程的join方法的时候,后面的线程会被阻塞 直到被join()方法执行完毕
+
+##### 线程让步
+
+线程让步可以通过yield()来实现,该方法和sleep()有点类似,都可以让当前的线程进入暂停状态,区别是yield不会阻塞线程,它只是将线程转换成为就绪状态,让系统的调制器重新分配线程
+
+```java
+
+public class join {
+
+	public static void main(String[] args) throws InterruptedException {
+		// TODO Auto-generated method stub
+		jj j = new jj();
+		Thread t1 = new Thread(j);   //第一个参数可以创建创建线程组 可以统一停止线程 统一调度线程
+		Thread t2 = new Thread(j);
+		t1.start();
+		//t1.join();t1线程要申请加入进来运行
+		t2.start();
+		t2.setPriority(Thread.NORM_PRIORITY);//这个方法是设置线程执行的优先级  Thread.MAX_PRIORITY = 10 
+		t1.join();   //临时加入线程使用join方法
+		for (int i = 0; i < 100; i++) {
+			System.out.println(Thread.currentThread().toString());
+		}
+	}
+
+}
+
+class jj implements Runnable {
+	public void run () {
+		for (int i = 0; i < 1000; i++) {
+			System.out.println(Thread.currentThread().toString());
+			Thread.yield();   //暂停当前线程,并执行其他线程(线程让步)
+		}
+	}
+}
+
+```
+
+#### 多线程的匿名函数表现形式
+
+```java
+
+public class xianchenzuihou {
+
+	public static void main(String[] args) {
+		
+		Runnable r =  new Runnable() {
+			public void run() {
+				for (int i = 0; i < 50; i++) {
+					System.out.println("Runnable="+i);
+				}
+			}
+		};
+		new Thread(r).start();
+		//重写Runnable,调用父类的start 实现开启多线程
+		
+		new Thread() {
+			public void run() {
+				for (int i = 0; i < 50; i++) {
+					System.out.println("thread="+i);
+				}
+			}
+		}.start();
+		//匿名函数实现开启多线程
+		
+		for (int i = 0; i < 50; i++) {
+			System.out.println("main="+i);
+		}
+	}
+
+}
+
+```
+
+```java
+new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				System.out.println("外面");
+				
+			}
+		}) {
+			@Override
+			public void run() {
+				//System.out.println("里面");
+			}
+		}.start();   //结果是  "里面"
+```
+
+### 多线程小Demo
+
+#### synchronized 方法
+
+```java
+
+public class duoxianchen {
+
+	public static void main(String[] args) {
+		Storage s = new Storage();
+		Inputt i = new Inputt(s);
+		Outputt o = new Outputt(s);
+		Thread t1 = new Thread(i);
+		Thread t2 = new Thread(o);
+		t1.start();
+		t2.start();
+		
+		
+	}
+
+}
+
+
+class Inputt implements Runnable {
+	private Storage s;
+	private int num = 0;
+	public Inputt(Storage s) {
+		this.s = s;
+	}
+	public void run () {
+		while(true) {
+			s.put(num++);
+		}
+	}
+}
+
+class Outputt implements Runnable {
+	private Storage s;
+	public Outputt(Storage s) {
+		this.s = s;
+	}
+	public void run () {
+		while(true) {
+			s.get();
+		}
+	}
+}
+
+class Storage {
+	private int[] cells = new int[10];
+	private int inPos;
+	private int outPos;
+	//inPos 表示存入的数组下标    outPos表示取出的数组下标
+	private int count;
+	public synchronized void put(int num) {
+		try {
+			while(count == cells.length) {  //已经满了
+				this.wait();
+			}
+			Thread.sleep(10);
+			cells[inPos] = num;
+			System.out.println("在cells["+inPos+"]中放入数据------"+cells[inPos]);
+			inPos++;
+			if(inPos == cells.length) {
+				inPos = 0;
+			}
+			count++;
+			this.notify();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public synchronized void get() {
+		try {
+			while(count == 0) {;
+				this.wait();
+			}
+			Thread.sleep(10);
+			int data = cells[outPos];
+			System.out.println("从celss["+outPos+"]中去除数据----"+data);
+			cells[outPos]  = 0;
+			outPos++;
+			if(outPos == cells.length) {
+				outPos = 0;
+			}
+			count--;
+			this.notify();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}
+```
+
+#### Condition方法
+
+```java
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class duoxianchen {
+
+	public static void main(String[] args) {
+		Storage s = new Storage();
+		Inputt i = new Inputt(s);
+		Outputt o = new Outputt(s);
+		Thread t1 = new Thread(i);
+		Thread t2 = new Thread(o);
+		t1.start();
+		t2.start();
+		
+		
+	}
+
+}
+
+
+class Inputt implements Runnable {
+	private Storage s;
+	private int num = 0;
+	public Inputt(Storage s) {
+		this.s = s;
+	}
+	public void run () {
+		while(true) {
+			s.put(num++);
+		}
+	}
+}
+
+class Outputt implements Runnable {
+	private Storage s;
+	public Outputt(Storage s) {
+		this.s = s;
+	}
+	public void run () {
+		while(true) {
+			s.get();
+		}
+	}
+}
+
+class Storage {
+	private int[] cells = new int[10];
+	private int inPos;
+	private int outPos;
+	//inPos 表示存入的数组下标    outPos表示取出的数组下标
+	Lock lock = new ReentrantLock();   //创建锁对象
+	Condition con_1 = lock.newCondition();    //创建监视器
+	Condition con_2 = lock.newCondition();    //创建监视器
+	private int count;                        //创建控制变量
+	public void put(int num) {
+		lock.lock();                          //开启线程
+		try {
+			while(count == cells.length) {  //10个满了 写入线程进入等待状态
+				con_1.await();   
+			}
+			Thread.sleep(10);         //减慢执行速度
+			cells[inPos] = num;       //将num加入数组
+			System.out.println("在cells["+inPos+"]中放入数据------"+cells[inPos]);   //打印加入的数组
+			inPos++;   //数组下边+1
+			if(inPos == cells.length) {  //如果数组满了 就变成0
+				inPos = 0;
+			}
+			count++;      //控制变量+1
+			con_2.signal();    //开启读取线程
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			lock.unlock();
+		}
+		
+	}
+	
+	public void get() {
+		lock.lock();
+		try {
+			while(count == 0) {;
+				con_2.await();
+			}
+			Thread.sleep(10);
+			int data = cells[outPos];
+			System.out.println("从celss["+outPos+"]中去除数据----"+data);
+			cells[outPos]  = 0;
+			outPos++;
+			if(outPos == cells.length) {
+				outPos = 0;
+			}
+			count--;
+			con_1.signal();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			lock.unlock();
+		}
+	}
+}
+```
 
