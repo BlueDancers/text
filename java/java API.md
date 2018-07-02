@@ -428,3 +428,358 @@ public class Stringbuilder {
 
 ```
 
+## 基本数据类型对象包装类
+
+```java
+package cn.integer.package2;
+
+public class integer {
+
+	public static void main(String[] args) {
+		/*
+		 * 基本数据类型对象包装类
+		 * 为了方便操作基本数据类型,将其封装成一个对象,在对象中定义了属性和行为丰富了该数据的操作
+		 * 用于描述该对象的类就称为基本数据类型对象包装类
+		 * 
+		 *  byte		Byte
+		 *  short   	Short
+		 * 	int     	Integer
+		 * 	long    	Long
+		 * 	float   	Float
+		 * 	double  	Double
+		 * 	char   		Character
+		 * 	boolean 	Boolean
+		 * 
+		 * 
+		 * 给包装对象主要是用于基本类型和字符串之间的转换
+		 * 	基本类型--->字符串
+		 * 		1. 基本类型数值+""
+		 * 		2. 用String类中的静态方法valueOf(基本类型数值)
+		 * 
+		 * 	字符串--->基本类型
+		 * 		1. 使用包装类中的静态方法 xxx parseXxx("xxx类型的字符串")  parseInt()  parseLong() parseBoolean() 只有Character
+		 * 		2. 如果字符串被Integer进行对象的封装,可以使用另外的非静态方法intValue()将一个Integer转成基本类型
+		 * 		3. intValue()可以将Integer里面的字符串转成基本类型
+		 * */
+		
+		System.out.println(Integer.MAX_VALUE);
+		
+		String num = "123";
+		int num1 = Integer.parseInt(num);  //字符串转成数字
+		System.out.println(num1+1);    
+		Integer i = new Integer("123123");
+		System.out.println(i.intValue()+1);   //可以将Integer里面的字符串转成基本类型
+		//10进制--->其他进制
+		System.out.println(Integer.toBinaryString(60));     //十进制转2进制
+		System.out.println(Integer.toOctalString(60));		//10进制转8进制
+		System.out.println(Integer.toHexString(60));		//10进制转16进制
+		System.out.println(Integer.toString(60, 2));		//60转2进制	第二参数是进制
+		
+		//其他进制--->10进制
+		System.out.println(Integer.parseInt("110",2));      //将110以2进制转换  打印出10进制的数
+		Integer i1 = new Integer(10);
+		Integer i2 = new Integer("10");
+		System.out.println(i1.compareTo(i2));  //compareTo()用于比较
+		//Integer的自动装箱
+		Integer i3 = 20;  //相当于 new Integer(20)
+		Integer s1 = new Integer(100);
+		Integer s2 = new Integer(100);
+		Integer s3 = 100;
+		Integer s4 = 100;
+		System.out.println(s1 == s2);			//false
+		System.out.println(s1.equals(s2));		//true
+		System.out.println(s3 == s4);			//true  为什么这里是true呢? 因为自动装箱机制 如果装的是一个字节 那么数据会被共享 不会开辟新空间
+		System.out.println(s3.equals(s4));		//true
+		
+		
+	}
+
+}
+```
+
+#### 给字符串排序 并返回排序好的字符串
+
+```java
+package cn.integer.package2;
+import java.util.Arrays;
+
+public class integerTest {
+	private static final String SPACE_SEPARATOR = " ";  //ctrl+shift+x 选中变大写  ctrl+shift+y 选中变小写
+	public static void main(String[] args) {
+		String num = "20 78 9 -7 88 36 29";
+		String[] ss = num.split(SPACE_SEPARATOR);
+		int[] sss = new int[ss.length];
+		for (int i = 0; i < sss.length; i++) {
+			sss[i] = Integer.parseInt(ss[i]) ;    //将字符串转成int
+		}
+//		for (int i = 0; i < sss.length-1; i++) {
+//			for (int j = i+1; j < sss.length; j++) {
+//				if(sss[i] > sss[j]) {
+//					int temp = sss[i];
+//					sss[i] = sss[j];
+//					sss[j] = temp;
+//				}
+//			}
+//		}
+//		for (int i = 0; i < sss.length; i++) {
+//			System.out.println(sss[i]);
+//		}
+		Arrays.sort(sss);   //int 排序函数
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < sss.length; i++) {   //这里将int类型的数据填入StringBuilder里面 变成字符串
+			sb.append(sss[i]+SPACE_SEPARATOR);
+		}
+		System.out.println(sb);
+	}
+
+}
+
+```
+
+## 集合框架
+
+集合类的由来:
+
+​		对象用于封装特有数据,对象多了需要存储,如果对象的个数不稳定,就使用集合容器进行储存
+
+集合的特点(和数组的不同之处)
+
+1. 用于存储对象的容器
+2. 集合的长度是可变的
+3. 集合中不可以存储基本数据类型值
+
+## Collection
+
+```java
+import java.util.ArrayList;
+import java.util.Collection;
+
+public class collection {
+
+	public static void main(String[] args) {
+		/*
+		 * 集合容器因为内部的数据机构的不同,有多种具体容器
+		 * 框架顶层的Collection接口
+		 * 
+		 * Collection的常用方法
+		 * 1. 添加
+		 * 		boolean add(Object obj)					添加元素
+		 * 		boolean addAll(Collection coll)			添加多个元素
+		 * 
+		 * 2. 删除
+		 * 		boolean remove(Objetc obj)				移除指定集合里面的元素
+		 * 		boolean removeAll(collection coll)		删除多个指定元素
+		 * 		void clear() 							移除所有					
+		 * 
+		 * 3. 判断
+		 * 		boolean contains(Object Obj)			判断是否存在该元素
+		 * 		boolean containsAll(Collection coll)	判断时候存在该元素集合
+		 * 		boolean isFmpty()  						判断集合中时候有元素 
+		 * 
+		 * 4. 获取
+		 * 		int size()								获取单个元素
+		 * 		Iterator Iterator()  					取出元素的方法: 迭代器
+		 * 
+		 * 5. 其他
+		 * 		boolean retainAll(Collection coll)		取交集
+		 * 		Object[] toArray()    					将集合转成数组
+		 *
+		 */
+		Collection coll = new ArrayList();
+		show(coll);
+		Collection coll1 = new ArrayList();
+		Collection coll2 = new ArrayList();
+		show(coll1,coll2);
+	}
+
+	private static void show(Collection coll1, Collection coll2) {
+		//给c1添加元素
+		coll1.add("这是第1个");
+		coll1.add("这是第2个");
+		coll1.add("这是第3个");
+		coll1.add("这是第4个");
+		
+		//给c2添加元素
+		coll2.add("第1个");
+		coll2.add("第2个");
+		coll2.add("第3个");
+		coll2.add("第4个");
+		
+		//把c2加入c1
+		coll1.addAll(coll2);
+		System.out.println(coll1);  
+		
+		//删除集合元素
+		coll1.removeAll(coll2);   //将两个集合里面的相同元素从调用removeAll的集合中删除
+		System.out.println(coll1);
+		
+		//判断集合里面是否有相同的集合
+		
+		System.out.println(coll1.containsAll(coll2));   //上面删除了所以现在不存在
+		coll1.addAll(coll2);
+		System.out.println(coll1.containsAll(coll2));	//true 
+		
+		//获取集合和集合之间的交集
+		coll1.retainAll(coll2);                         //取交集 和remove相反 这里是把不相同的删除掉,保留与指定集合相同的元素
+		System.out.println(coll1);
+}
+
+	public static void show(Collection coll) {
+		//1.添加元素
+		coll.add("abcd1");
+		coll.add("abcd2");
+		coll.add("abcd3");
+		System.out.println(coll);
+		//2. 删除元素
+		coll.remove("abcd2");
+		System.out.println(coll);
+		//3. 清空集合
+		//coll.clear();
+		//System.out.println(coll);
+		//4. 判断是否存在
+		System.out.println(coll.contains("abcd1"));   	//true
+		System.out.println(coll.isEmpty());				//加入不存在数值就返回true 存在就返回false
+		
+		
+		
+	}
+
+
+}
+
+```
+
+### iterator
+
+```java
+package cn.collection.package3;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+public class inerator {
+
+	public static void main(String[] args) {
+		Collection cc = new ArrayList();
+		cc.add("abc1");
+		cc.add("abc2");
+		cc.add("abc3");
+		cc.add("abc4");
+		
+		//使用 Collection 里面的 iterator()方法,调用迭代器方法,为了获取迭代器的对象
+	 	Iterator iterator =  cc.iterator();
+//	 	while(iterator.hasNext()) {
+//	 		System.out.println(iterator.next());
+//	 	}
+	 	
+	 	for(Iterator it = cc.iterator();it.hasNext();) {   //这样的方法更加不占用内存
+	 		System.out.println(it.next());
+	 	}
+	}
+
+}
+
+```
+
+
+
+## List
+
+```java
+package cn.collection.package3;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
+public class listset {
+
+	public static void main(String[] args) {
+		/*
+		 * List: 有序(存入和取出的顺序一致) 元素有角标,元素可以重复
+		 * 		有一个共性特点,都可以操作角标
+		 * 		添加:add(index,element)    //(角标,元素)
+		 * 			:add(index,Collection) //(角标,元素集合) 
+		 * 		删除:
+		 * 			remove(角标)
+		 * 		修改:
+		 * 			set(index,element)
+		 * 		获取:
+		 * 			get(index)
+		 * 			indexOf(Object)	
+		 * 			lastindexOf(Object)
+		 * 			subList(from,to)
+		 * Set: 元素不可以重复,无序 			
+		 * 
+		 */
+		show();
+	}
+
+	private static void show() {
+		List list = new ArrayList();
+		list.add("1");
+		list.add("2");
+		list.add("3");
+		System.out.println(list);
+		//插入元素
+		list.add(0, 0);
+		System.out.println(list);
+		
+		//删除元素
+		System.out.println(list.remove(2));   //会返回删除的值
+		System.out.println(list);
+		
+		//修改元素
+		
+		System.out.println(list.set(0, 123123));   //将0角标改成123123  会返回被修改的值
+		System.out.println(list);
+		
+		//获取元素
+		System.out.println(list.get(2));    //返回指定角标的元素
+		System.out.println(list.subList(1, 2));   //返回角标为1的字符串
+		
+
+//		Iterator it =  list.iterator();
+//		while(it.hasNext()) {
+//			Object obj = it.next();    	//java.util.ConcurrentModificationException  因为迭代过程里面有进行list操作 就会报错
+//										//可以使用Iterator接口的子接口ListIterator来完成迭代中对元素的更多操作
+//			if(obj.equals("1")) {
+//				list.add("添加的");
+//			}else {
+//				System.out.println(obj);
+//			}
+//			
+//		}
+		
+		ListIterator it = list.listIterator();   //获取列表迭代器对象 
+		//他可以实现在迭代过程里面完成对元素的增删改查
+		while(it.hasNext()) {
+			Object obj = it.next();
+			if(obj.equals("1")) {
+				it.set("添加");   
+			}
+		}
+		
+		System.out.println(list);
+		
+		for (int i = 0; i < list.size(); i++) {     //size获取长度   list 特有的去除元素方式之一
+			System.out.println(list.get(i));
+		}
+		
+		while(it.hasPrevious()) {
+			System.out.println(it.previous());   //previous  返回列表的前一个元素
+		}
+	}
+
+}
+
+```
+
+
+
+
+
+
+
