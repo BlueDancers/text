@@ -649,7 +649,7 @@ public class collection {
 
 ```
 
-### iterator
+### iterator(迭代器)
 
 ```java
 package cn.collection.package3;
@@ -684,7 +684,9 @@ public class inerator {
 
 
 
-## List
+## List 
+
+### listIterator(列表迭代器)
 
 ```java
 package cn.collection.package3;
@@ -775,6 +777,280 @@ public class listset {
 
 }
 
+```
+
+//List
+			//|-- Vector		内部是数组数据结构,同步的   1.0版本就出现了  增删,查询 都慢
+			//|-- ArrayList	内部是数组数据结构,不同步   替代Vector  查询的速度快
+			//|-- LinkedList	内部是链表数据结构,不同步	 增删元素非常快
+
+
+
+## Vector
+
+```java
+Vector v = new Vector();
+v.addElement("添加元素")
+Enumeration en = v.elements();
+while(en.hasMoreElements()){    
+    //该接口的功能由Iterator接口复制。 此外，Iterator还添加了一个可选的删除操作，并具有较短的方法名称。 新的实现应该考虑使用迭代器优先于枚举。 
+
+    System.out.printIn(en.nextElement)
+}
+
+```
+
+## LinkedList
+
+addFirst()
+
+addLast()
+
+**jdk1.6 增加了**
+
+offetFirst()
+
+offetLast()
+
+getFirst()	//获取但不移除,如果链表为空,会抛出异常
+
+getLast()
+
+**jdk1.6 增加了**
+
+PeekFirst()	//获取但不移除,如果链表为空,不会抛出异常,会返回null
+
+PeekLast()
+
+
+
+removeFirst()	//获取并且不移除,如果链表为空,会抛出异常
+
+removeLast()
+
+**jdk1.6增加了**
+
+pollFirst()		////获取并且不移除,如果链表为空,不会抛出异常,会返回null
+
+pollLast()
+
+```java
+package cn.collection.package3;
+import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class LinkedListDemo {
+
+	public static void main(String[] args) {
+		show();
+		//请使用linkedlist来模拟堆栈或者队列数据结构
+		//堆栈: 先进后出
+		//队列: 先进先出
+	
+		demo();
+		
+	}
+	private static void demo() {
+		LinkedListTestDuiLie d = new LinkedListTestDuiLie();    //使用linkedlist来模拟队列数据结构
+		System.out.println("使用linkedlist来模拟队列数据结构");
+		d.myAdd("hahaha1");
+		d.myAdd("hahaha2");
+		d.myAdd("hahaha3");
+		d.myAdd("hahaha4");
+		d.myAdd("hahaha5");
+		while(!d.isNull()) {
+			System.out.println(d.myGet());
+		}
+		System.out.println("使用linkedlist来模拟堆栈数据结构");
+		LinkedListTestDuiZhan dz = new LinkedListTestDuiZhan(); 
+		dz.myAdd("hahaha1");
+		dz.myAdd("hahaha2");
+		dz.myAdd("hahaha3");
+		dz.myAdd("hahaha4");
+		dz.myAdd("hahaha5");
+		while(!dz.isNull()) {
+			System.out.println(dz.myGet());
+		}
+	}
+	
+	private static void show() {
+		LinkedList link = new LinkedList();
+		link.addFirst("11");
+		link.addFirst("22");
+		link.addFirst("33");
+		link.addFirst("44");
+		System.out.println(link);
+		System.out.println(link.getFirst());  //获取第一个 但是不删除
+		System.out.println("remove="+link.removeFirst());   //删除第一个 返回删除的值
+//		Iterator it = link.iterator();
+//		while(it.hasNext()) {
+//			System.out.println(it.next());
+//		}
+		while(!link.isEmpty()) {                       //取出的时候 删除全部元素   
+			System.out.println(link.removeFirst());
+		}
+		
+	}
+}
+
+
+```
+
+```java
+package cn.collection.package3;
+
+import java.util.LinkedList;
+
+class LinkedListTestDuiLie{
+	private LinkedList link;    //私有内部变量
+	public LinkedListTestDuiLie() {
+		link = new LinkedList();   //new 的时候给变量LinkedList
+	} 
+	public Object myGet() {
+		return link.removeFirst();    //removeLast()就是堆栈
+	}
+	public void myAdd(Object obj) {
+		link.addLast(obj);
+	}
+	public boolean isNull() {
+		return link.isEmpty();
+	}
+	
+}
+```
+
+## ArrayList
+
+```java
+package cn.collection.package3;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class ArrayListDemo {
+		public static void main(String[] args) {
+			ArrayList al = new ArrayList();
+			al.add(new Person("1", 10));   //因为这里存入的时候成了Object 向上提成了,在查看的时候要向下转型
+			al.add(new Person("2", 20));
+			al.add(new Person("3", 30));
+			Iterator it = al.iterator();
+			while(it.hasNext()) {
+				//System.out.println(((Person)it.next()).getName());   
+				Person p = (Person)it.next();         //取出的时候要向下转型,不然就是哈希值
+				System.out.println(p.getName()+"::"+p.getAge());
+			}
+			
+		}
+}
+
+class Person {
+	private String name;
+	private int age;
+	public String getName() {
+		return name;
+	}
+	public Person(String name,int age) {
+		this.age = age;
+		this.name = name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+}
+
+```
+
+## Set
+
+元素不可以重复,是无序的
+
+​	Set接口中的方法和Collection一致
+
+​	HashSet  内部是数据结构的哈希表,是不同步的
+
+哈希表确定元素是否相同
+
+1. 判断的是两个元素的哈希是否想相同,如果相同,就判断两个对象的内容是否相同
+2. 判断哈希的同时,其实就是判断的hashCode的方法,判断内容相同就equals方法,如果hash不相同,就不会用equals
+
+```java
+package set;
+
+import java.util.HashSet;
+import java.util.Iterator;
+
+public class hashsetDemo {
+
+	public static void main(String[] args) {
+//		HashSet hs = new HashSet();
+//		hs.add("hahaha1");
+//		hs.add("hahaha1");    //set数据唯一
+//		hs.add("hahaha2");
+//		hs.add("hahaha3");
+//		hs.add("hahaha4");
+//		
+//		Iterator it = hs.iterator();
+//		while(it.hasNext()) {
+//			System.out.println(it.next());
+//		}
+//		
+		
+		//先hashSet里面存储person对象,如果姓名年龄相同,视为一个人
+		HashSet hss = new HashSet();
+		hss.add(new Person("list1",21));
+		hss.add(new Person("list2",24));
+		hss.add(new Person("list3",23));
+		hss.add(new Person("list4",25));
+		hss.add(new Person("list4",25));        //hashSet先进行hash值判断  假如equals相同 就在进行equals判断
+		Iterator it1 = hss.iterator();
+		while(it1.hasNext()) {
+			Person p = (Person)it1.next();
+			System.out.println(p.getName()+"::"+p.getAge());
+		}
+	}
+
+}
+class Person {
+	private String name;
+	private int age;
+	public String getName() {
+		return name;
+	}
+	public Person(String name,int age) {
+		this.age = age;
+		this.name = name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public String toString() {
+		return name+"--"+age;
+	} 
+	@Override
+	public int hashCode() {
+		System.out.println(this+".........hashcode判断");
+		return name.hashCode()+age;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		System.out.println(this.toString()+".......reuals判断");
+		Person p = (Person)obj;
+		return this.name.equals(p.name);
+	}
+}
 ```
 
 
