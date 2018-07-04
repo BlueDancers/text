@@ -980,6 +980,8 @@ class Person {
 1. 判断的是两个元素的哈希是否想相同,如果相同,就判断两个对象的内容是否相同
 2. 判断哈希的同时,其实就是判断的hashCode的方法,判断内容相同就equals方法,如果hash不相同,就不会用equals
 
+### HashSet
+
 ```java
 package set;
 
@@ -1053,7 +1055,38 @@ class Person {
 }
 ```
 
+### linkedhashSet
 
+```java
+//linkedhashSet
+		LinkedHashSet lh = new LinkedHashSet();//LinkedHashSet可以完成去重操作(保证有序的同时)
+		lh.add("1");
+		lh.add("2");
+		lh.add("3");
+		lh.add("4");
+		lh.add("2");
+		Iterator it =lh.iterator();
+		while(it.hasNext()) {
+			System.out.println("LinkedHashSet::"+it.next());
+		}
+		
+```
+
+### TreeSet
+
+```text
+可以对set集合的元素进行指定顺序的排序,不同步
+		 * 判断元素的唯一性方式:就是根据比较方法的返回值时候是0 是0就是相同的元素 不存
+		 * 
+		 * TreeSet对元素进行排序的方式之一:
+		 * 		让元素本身具备比较功能,就需要实现comparable接口,覆盖compareTo()方法
+		 * 如果不要按照对象中具备的自然顺序进行排序,如果对象中不具备自然顺序
+		 * 可以使用TreeSet集合第二种排序方法
+		 * 让集合具备比较功能,定义一个类实现Comparator接口,覆盖compare方法
+		 * 将该类对象作为参数传递给TreeSet集合的构造函数
+```
+
+在set包里面
 
 
 
