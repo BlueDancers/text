@@ -1174,7 +1174,90 @@ Map 一次储存一对元素,被称为双列集合(键值对),不能出现重复
 
 Collection 一次添加一个元素,被称为单列集合
 
+```java
+public class mapDemo {
 
+	public static void main(String[] args) {
+		/*
+		 * 常用方法:
+		 * 1.添加  	put(key,value) 返回前一个和key关联的值,如果没有 就返回null
+		 * 2.删除	
+		 * 			clear() 清空Map集合
+		 * 			remove(key)   返回value值
+		 * 3.判断
+		 * 			containsKey(key)    	是否包含值
+		 * 			containsValue(value)	是否包含键		
+		 * 			isEmpty()				判断是否有键值对
+		 * 4.获取
+		 * 			get(key)   	通过键拿值,如果没有键返回null
+		 * 			size()  	返回键值对的个数
+		 */
+		Map<Integer,String> map = new HashMap<Integer,String>();
+		show(map);
+	}
 
+	private static void show(Map<Integer,String> map) {//学号 姓名
+		//添加
+		System.out.println(map.put(8,"wangcai"));    //假如是第一次存就返回 	null
+		System.out.println(map.put(8,"xiaoqiang"));	 //存相同键 值会覆盖        	wangcai
+		System.out.println(map.put(7,"zhaoliu"));
+		System.out.println(map.put(6,"zhaoliu"));
+		System.out.println(map.put(5,"alalala"));
+		System.out.println(map);
+		//删除
+		System.out.println("删除7的值--"+map.remove(7));	//删除会返回删除键的值	
+		
+		//判断
+		System.out.println("是否有8这个键"+map.containsKey(8));
+		
+		//获取
+		System.out.println("get=="+map.get(8));
+		
+		//取出map里面的所有元素
+		//想通过keyset方法获取map里面的所有键所在的set集合,然后通过set迭代器获取到每个键的值
+		System.out.println(map.keySet());  //返回key值 set类型
+		Set<Integer> keySet = map.keySet();
+		Iterator<Integer> it = keySet.iterator();
+		while(it.hasNext()) {
+			String value = map.get(it.next());
+			System.out.println(value);
+		}
+		
+		System.out.println("--------");
+		
+		//通过map转set可以完成对迭代
+		//还有一个方法entryset
+		//该方法将键和值的映射关心作为对象储存在set集合里面,而这映射关心的类型就是Map.Entry类型(Key,Value)
+		System.out.println(map.entrySet());   //返回kv映射关系
+		Set<Map.Entry<Integer, String>> entrySet = map.entrySet();
+		Iterator<Map.Entry<Integer, String>> it1 = entrySet.iterator();
+		while(it1.hasNext()) {
+			Map.Entry<Integer, String> me = (Entry<Integer, String>) it1.next();   //为什么需要转型????????
+			Integer key = me.getKey();
+			String value = me.getValue();
+			System.out.println(key+":::"+value);
+		}
+		
+		//获取所有的value值
+		System.out.println(map.values());
+		Collection<String> value = map.values();
+		Iterator<String> it2 = value.iterator();
+		while(it2.hasNext()) {
+			System.out.println(it2.next());
+		}
+		
+	}
 
+}
+```
+
+Map下面常用的子类
+
+​	|-- HashMap		:内部结构是哈希表,不同步,允许null作为键,允许null作为值
+
+​	|-- treeMap		:内部结构是二叉树,不同步,可以对Map集合中的键进行排序
+
+​	|-- Hashtable  	:内部结构是哈希表,是同步的,不允许null作为键,不允许null作为值
+
+​		|-- 用来存储键值对型的配置文件信息,可以和IO技术想结合
 
