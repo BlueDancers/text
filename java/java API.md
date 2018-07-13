@@ -1261,3 +1261,111 @@ Map下面常用的子类
 
 ​		|-- 用来存储键值对型的配置文件信息,可以和IO技术想结合
 
+### 练习 "fafahjdarawi" 获取该字符串中,每一个字母的出现的次数
+
+```java
+package cn.map.package5;
+
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+
+public class MapTest {
+
+	public static void main(String[] args) {
+		/*
+		 * 练习 "fafahjdarawi" 获取该字符串中,每一个字母的出现的次数
+		 * 要求打印a(1)b(2)
+		 * 字符和次数之间存在映射关系,并且不止一个 可以存储映射关系的 是数组和 Map 
+		 * 关系的一方是有序的吗?
+		 * 不唯一 使用Map集合
+		 * 又发现可以保证唯一行的一行几倍这顺序如a b c
+		 * 
+		 *   
+		 * 应该储存的是字母和次数的对应关系
+		 * 这个集合里面最终应该储存的是字母,随意先将字符变成字符数组
+		 * 如果该字母键不存在,就将该字母作为键 1作为值存储到map里面
+		 * 如果该字母键存在,就将字符的键取出 +1 在存入Map里面
+		 * 键相同 只会覆盖 这样记录的该字母的出现次数
+		 * 遍历结束 map集合就记录的所有字母的出现的次数
+		 */
+		String data = "fafa3123123hjda  aaewqd--rawi";
+		//String[] list = data.split("");
+		char[] list = data.toCharArray();
+		Map<Character, Integer> lm = new LinkedHashMap<Character,Integer>();
+		for (int i = 0; i < list.length; i++) {
+			if(list[i]>='a' && list[i] <= 'z') {   //这样可以控制 输入的必须是a-z的字母
+				Integer value = lm.get(list[i]);
+				int count = 1;   //初始化为1
+				if(value != null) {
+					count = value+1;
+				}
+				lm.put(list[i], count);  
+				
+//				if(lm.containsKey(list[i]) == false){
+//					lm.put(list[i], 1);   			//假如不存在就添加这个键值对
+//				}else {
+//					int value = lm.get(list[i])+1;	//假如已经存在.获取键 在这基础上面 +1
+//					lm.put(list[i], value);
+//				}
+			}		
+		}
+
+		Set<Map.Entry<Character, Integer>> entry = lm.entrySet();
+		Iterator<Map.Entry<Character, Integer>> it = entry.iterator();
+		String datas = mapToString(it);
+		System.out.println(datas);
+	}
+
+	private static String mapToString(Iterator<Entry<Character, Integer>> it) {
+		StringBuffer sb = new StringBuffer();
+		while(it.hasNext()) {
+			Map.Entry<Character, Integer> en = it.next();
+			int value = en.getValue();
+			Character key = en.getKey();
+			sb.append(key+"出现了"+value+"次"+",");
+		}
+		return sb.toString();
+	}
+}
+
+```
+
+#### Map在有映射关系的时候,可以优先考虑
+
+```java
+package cn.map.package5;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class MapTest2 {
+
+	public static void main(String[] args) {
+		/**
+		 * Map在有映射关系的时候,可以优先考虑
+		 * 在查表法里面引用比较多
+		 * 
+		 */
+		String week = "星期1";
+		String Bymap = getWeek(week);
+		System.out.println(Bymap);
+	}
+
+	private static String getWeek(String week) {
+		 Map<String,String> map = new HashMap<String,String>();
+		 map.put("星期1", "Mon");
+		 map.put("星期2", "Tus");
+		 map.put("星期3", "Wes");
+		 map.put("星期日", "Sun");
+		 map.put("星期7", "Sun");
+		 return map.get(week);
+	}
+
+}
+
+```
+
