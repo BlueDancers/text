@@ -1369,3 +1369,268 @@ public class MapTest2 {
 
 ```
 
+### 工具类
+
+#### Collections : 是集合框架的工具类,里面都是静态方法
+
+Collections.sort()  //排序
+
+````java
+package cn.utils.package6;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+public class tools {
+
+	public static void main(String[] args) {
+		show();
+	}
+
+	private static void show() {
+		List<String> list = new ArrayList<String>();
+		list.add("dasdada");
+		list.add("dfdsfsd");
+		list.add("fsds");
+		list.add("ewqe");
+		list.add("eqweq");
+		list.add("e");
+		//Collections.sort(list);    //排序函数
+		mySort(list,new ComparatorByLength());				//实现的排序函数
+		System.out.println(list);
+		
+	}
+
+	private static <T extends Comparable<? super T>> void mySort(List<T> list,Comparator<T> comp) {
+		for (int i = 0; i < list.size()-1; i++) {
+			for (int j = i+1; j < list.size(); j++) {
+				//if(list.get(i).compareTo(list.get(j))>0) {
+				if(comp.compare(list.get(i), list.get(j))>0){
+//					T temp = list.get(i);
+//					list.set(i, list.get(j));
+//					list.set(j, temp);
+					Collections.swap(list, i, j);
+				}
+			}
+		}
+	}
+}
+
+class ComparatorByLength implements Comparator<String> {   //实现自定义排序
+
+	@Override
+	public int compare(String o1, String o2) {
+		int temp = o1.length() - o2.length();
+		return temp == 0?o1.compareTo(o2):temp;
+	}
+	
+}
+````
+
+#### 最大值
+
+```java
+String max = Collections.max(list,new ComparatorByLength());  //获取最大值 第二个参数可以是排序方式
+```
+
+### 替换
+
+```java
+Collections.replaceAll(list, "dasdada", "a");
+```
+
+### 给非同步的集合加锁
+
+异步变同步的方法
+
+```java
+class MyCollections{
+    public static List SynList (List list) {
+    	return new MyList(list);    
+    }
+    private class Mylist implements List {
+        private List list;
+        
+        private static final object lock = new Object();
+        Mylist(List list) {
+            this.list = list;
+        }
+        public boolean add(Object obj) {
+            synchronized (lock) {
+                return list.add(obj);
+            }
+        }
+        public boolean remove (Object obj) {
+        	synchronized (lock) {
+                return list.remove(obj)
+            }
+        }
+    }
+}
+```
+
+#### Arrays是数组的工具类,里面都是静态方法
+
+```
+Array.toString(arr);
+//将数组变成字符串,便于打印
+```
+
+#### 数组转集合
+
+```java
+package cn.utils.package6;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class ArrayTools {
+
+	public static void main(String[] args) {
+		/*
+		 * List asList (数组) 将数组转成集合
+		 * 好处: 可以使用集合的方法来操作数组中的元素
+		 * 注意: 数组的长度是固定的,所以对集合的增删方法都不可以使用,否则会发生UnsupportedOperationException
+		 */
+		String[] arr = {"aaa","bbb","ccc"};
+		List<String> list = Arrays.asList(arr);
+		//list.add("dad");
+		//System.out.println(list.contains("aaa"));//true
+		
+		//一些注意事项
+		int[] arrs = {1,2,3,5,6,4};
+		Integer[] arrss = {1,2,3,5,6,4}; 
+		List<int[]> lists = Arrays.asList(arrs);
+		System.out.println(lists);//基本数据类型,会将该数组作为集合中的元素进行存储 所以这里存入的是第一个位置
+		System.out.println(lists.size());
+		List<Integer> listss = Arrays.asList(arrss);
+		System.out.println(listss);
+	}
+}
+```
+
+#### 集合转数组
+
+```java
+public static void main(String[] args) {
+		/*
+		 * 集合转数组
+		 * 
+		 */
+		List<String> list = new ArrayList<String>();
+		list.add("dasdas1");
+		list.add("dasdas2");
+		list.add("dasdas3");
+		list.add("dasdas4");
+		list.add("dasdas5");
+		list.add("dasdas");
+		String[] arr = list.toArray(new String[5]);    
+		//list本身的toArray就是将list集合转为数组  ,这里String[5]指定长度为5 
+		//假如小于集合的长度,会创建一个同类型的并和数组相同的size的数组
+		//假如大于集合本身的长度,其他位置会默认null
+		System.out.println(Arrays.toString(arr));
+		System.out.println(arr.length);
+	}
+```
+
+### forEach
+
+```java
+package cn.utils.package6;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class forEachDemo {
+	public static void main(String[] args) {
+		/*
+		 * forEach语句
+		 * 格式:
+		 * for(类型 变量 : Collection集合 | 数组) {}
+		 * 传统for与forEach的不同之处
+		 * 1. 传统for可以完成对语句执行很多次,因为可以控制循环的增量条件
+		 * forEach是一种简化形式,他必须有被遍历的目标,该目标要么是数组 要么是Collection集合
+		 * 
+		 * 对于数组的遍历 如果仅仅是获取数组元素 可以使forEach
+		 * 如果要对数组的角标进行操作,建议使用for
+		 */
+		List<String> list = new ArrayList<String>();
+		list.add("abc1");
+		list.add("abc2");
+		list.add("abc3");
+		list.add("abc4");
+		for (String a : list) {    //简化书写
+			System.out.println(a);
+		}
+		
+		int[] arr = {1,3,3,43,5};
+		for (int i : arr) {					//还可以使用数组
+			System.out.println(i);
+		}
+		
+		//可以使用高级for对map进行操作
+		Map<Integer, String> map = new HashMap<Integer,String>();
+		map.put(1, "张三");
+		map.put(2, "李四");
+		map.put(3, "王五");
+		map.put(4, "赵六");
+		for (int i : map.keySet()) {
+			System.out.println(map.get(i));
+		}
+		
+		for (Map.Entry<Integer, String> i : map.entrySet()) {
+			int ints = i.getKey();
+			String str = i.getValue();
+			System.out.println(ints+"::"+str);
+		}
+		
+	}
+	 	
+}	
+
+```
+
+### 不定参数
+
+```java
+package cn.utils.package6;
+
+public class budincanshu {
+	public static void main(String[] args) {
+		int sum = add(1,45,3456,457,58689,67,9079,8,89);
+		System.out.println(sum);   
+	}
+
+	private static int add(int ...is) {
+		System.out.println(is.length);			//不定参数将参数封装成为数组
+		int sum = 0;
+		for (int i : is) {
+			sum+=i;				
+		}
+		return sum;
+	}
+}
+```
+
+### 静态导入
+
+```java
+package cn.utils.package6;
+
+import static java.lang.System.out;					//静态导入
+public class staticdaoru {
+
+	public static void main(String[] args) {
+		out.println("打印");
+	}
+}
+
+```
+
+
+
