@@ -1632,5 +1632,246 @@ public class staticdaoru {
 
 ```
 
+## 其他对象API
+
+### System类
+
+system类中的属性都是静态的
+
+常用方法:
+
+long 	System.currentTimeMillis()
+
+获取时间的毫秒值 
+
+```java
+public class systemDemo {
+	public static void main(String[] args) {
+		//获取当前毫秒
+		long data = System.currentTimeMillis();
+		System.out.println(data);
+		
+		System.out.println("hello"+System.getProperty("line.separator")+"word");
+		//给系统设置一些属性信息
+		System.setProperty("我", "我的键值对");
+		show();
+	}
+
+	private static void show() {
+		//获取系统属性信息,并储存在Properties里面
+		Properties prop = System.getProperties();  
+		//这是map在子类 打印可以使用转set
+		//Properties来集合里面储存的都是String键值对
+		//最好使用它们自己的存储和去除的方式
+		System.out.println(prop);
+		Set<String> nameSet = prop.stringPropertyNames();
+		for (String string : nameSet) {
+			String value = prop.getProperty(string);  
+			System.out.println(string+"---"+value);
+		}
+	}
+}
+```
+
+### Runtime
+
+```java
+package cn.other.package7;
+
+import java.io.IOException;
+
+public class RuntimeDemo {
+
+	public static void main(String[] args) throws IOException {
+		/*
+		 * Runtime: 没有构造摘要,说明该类不可以创建对象
+		 * 又发现还有静态的方法,说明该类应该提供静态的返回该类型对象的方法
+		 * 而且只有一个,说明Ruintime类使用了单例设计模式
+		 */
+		Runtime rt =  Runtime.getRuntime();
+		rt.exec("notepad.exe");  //执行exe文件
+		
+	}
+
+}
+```
+
+### Math
+
+```java
+package cn.other.package7;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class DateDemo {
+
+	public static void main(String[] args) throws Exception {
+	
+		//show();
+		//show_1();
+		//show_2();
+		show_4();
+		
+	}
+
+	private static void show_4() throws Exception {
+		/*
+		 * 2012-3-17到 2012-4-6
+		 * 中间有多少天
+		 * 思路 : 两个日期相减就好了
+		 * 必须要有两个可以减法运算的数
+		 * 能减的是毫秒值
+		 * 如何获取Date对象
+		 * 
+		 * 1. 将日期格式字符串转成Date对象
+		 * 2. 将Date对象转成毫秒值
+		 * 3. 相减在变成了天数
+		 */
+		String one = "2012-3-17";
+		String two = "2012-4-6";
+		//1. 将日期转成转成日期对象
+		DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");//定义解析格式
+		Date date1 = dateformat.parse(one); //根据格式解析字符串
+		Date date2 = dateformat.parse(two);
+		long time1 = date1.getTime();  //根据解析出来的时间来获取毫秒值
+		long time2 = date2.getTime();
+		long time = time2-time1;	//获取天数的毫秒差
+		int day = getDay(time);		//将毫秒转成天数
+		System.out.println(day);	
+		
+		
+	}
+
+	private static int getDay(long time) {
+		int day = (int)(time/1000/60/60/24);
+		return day;
+	}
+
+	private static void show_2() {
+		/*
+		 * 将日期格式的字符串转成日期对象,适用房DateFormat类中的parse()方法
+		 */
+		Date date = new Date();
+		DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+		String date_s = dateformat.format(date);
+		System.out.println(date_s);
+		try {
+			Date date_d = dateformat.parse(date_s);
+			System.out.println(date_d);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+
+	private static void show_1() {
+		/*
+		 * 对日期对象进行实例化
+		 * 将日期对象 --> 转换成日期格式的字符串
+		 * 	使用的是DateFormat类中的format方法
+		 * 
+		 * 将日期格式的字符串转成日期对象
+		 * 使用的是 DateFormat类中的
+		 */
+		Date date = new Date();
+		//获取日期格式对象,具备默认的风格,FULL 	LONG SORT 可以指定风格
+		DateFormat dateformat = DateFormat.getDateInstance(DateFormat.FULL); 
+		//DateFormat.FULL	2018年7月19日 星期四
+		//dateformat = DateFormat.getDateTimeInstance();    //指定新的新的格式
+		dateformat = DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.SHORT); 
+		//2018年7月19日 上午9:10   可以指定两个对象
+		String strdate = dateformat.format(date);  //进行格式化
+		
+		System.out.println(strdate);   //2018-7-19
+		dateformat = new SimpleDateFormat("yyyy--MM--dd");
+		String str_date = dateformat.format(date); 
+		System.out.println(str_date);
+	}
+
+	
+	
+	private static void show() {
+		long time = System.currentTimeMillis();		//获取毫秒值
+		System.out.println(time);
+		Date date = new Date();
+		System.out.println(date);			//打印当前时间
+		Date date1 = new Date(1531922891750l);  //将毫秒值转成时间
+		System.out.println();
+		System.out.println(date1);
+		/*
+		 * 日期对象与毫秒值之间的转换
+		 * 毫秒值 --> 日期对象
+		 * 1. 通过date对象的构造方法new Date(TimeMillis)
+		 * 2. 通过setTime设置
+		 * 可以通过date对象的方法对该日期中的各个字段,进行操作
+		 * 
+		 * 日期对象 --> 毫秒值
+		 * getTime()
+		 * 因为可以通过具体的数值进行运算
+		 */
+		
+		System.out.println(date.compareTo(date1));  //对时间进行比较
+	}
+
+}
+```
+
+### Calendar(日历类)
+
+```java
+package cn.other.package7;
+
+import java.util.Calendar;
+
+public class calendardemo {
+	public static void main(String[] args) {
+		//show();
+		//show_1();
+		demo(2011);
+	}
+
+	private static void demo(int year) {
+		/*
+		 * 显示任意年份的2月多少天
+		 */
+		Calendar c = Calendar.getInstance();
+		c.set(year, 2, 1);					//设置时间  为3月1号
+		c.add(Calendar.DAY_OF_MONTH, -1);	//这样时间-1 就是2月的最后一天 获得天数
+		show(c);
+	}
+
+	private static void show_1() {
+		Calendar c = Calendar.getInstance();
+		c.set(2018, 11, 20);
+		c.add(Calendar.MONTH, 2);   //add属性是让日历里面的属性发生偏移
+		show(c);
+	}
+
+	private static void show(Calendar c) {
+		//Calendar c = Calendar.getInstance();
+		int year = c.get(Calendar.YEAR);
+		int month = c.get(Calendar.MONTH)+1;
+		int day = c.get(Calendar.DAY_OF_MONTH);
+		String week = week(c.get(Calendar.DAY_OF_WEEK));
+		System.out.println(year+"年"+month+"月"+day+"日"+week);
+	}
+
+	private static String week(int i) {
+		String[] week = {" ","星期日","星期1","星期2","星期3","星期4","星期5","星期6"};
+		return week[i];
+	}
+}
+```
+
+
+
+
+
+
+
 
 
