@@ -498,11 +498,486 @@ public class copyMusic {
 }
 ```
 
+### 读取键盘录入
+
+```java
+package readKey;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+public class readKeyDemo {
+
+	public static void main(String[] args) throws IOException {
+		//readKey();
+		readKey2();
+	}
+
+	private static void readKey2() throws IOException {
+		/*
+		 * 获取用户键盘录入的数据,并处理成为大写的 如果输入over 就结束流
+		 * 因为键盘录入只读取一个字节,要判断是不是over 需要现将读取的字节拼成字符串
+		 * 那就需要一个容器
+		 * 在用户回车之前 判断字符串
+		 */
+		//1.创建容器
+		StringBuilder sb = new StringBuilder();
+		//获取键盘读取流
+		InputStream is = System.in;
+		//定义变量 记录读取到的字节 并循环获取
+		int ch = 0;
+		
+		while((ch = is.read()) != -1) {
+			//将读取到的字节存储到Stringbuilder里面
+			//换行标记不存
+			if(ch == '\r') {
+				continue;
+			}
+			if(ch == '\n') {
+				String temp = sb.toString();
+				if("over".equals(temp)) {
+					break;
+				}else {
+					System.out.println(temp.toUpperCase());
+					sb.delete(0, sb.length());
+				}
+			}else {
+				sb.append((char)ch);
+			}
+			
+			//System.out.println(ch);
+		}
+	}
+
+	private static void readKey() throws IOException {
+		InputStream is = System.in;
+		int ch = is.read();
+		System.out.println((char)is.read());//阻塞式方法 没有读到数据之前会一直等待
+		System.out.println((char)is.read());
+		System.out.println((char)is.read());
+		System.out.println((char)is.read());
+		System.out.println((char)is.read());
+		System.out.println((char)is.read());
+		
+		//不要关闭流 因为 这是系统时间 关了 除非重启电脑,要不然就打不开这个流
+	}
+
+}
+```
+
+### 转换流
+
+```java
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.OutputStream;
+
+
+public class TransStreamDemo {
+
+	public static void main(String[] args) throws IOException {
+		
+//		InputStream is = System.in;//字节流
+//		InputStreamReader isr = new InputStreamReader(is);//将字节转换成为字符的桥梁 转换流
+//		BufferedReader br = new BufferedReader(isr);//字符流
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		//输出流
+//		OutputStream os = System.out;
+//		OutputStreamWriter osw = new OutputStreamWriter(os);
+//		BufferedWriter bw = new BufferedWriter(osw);
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+		String line = null;
+		while((line = br.readLine()) !=null) {
+			if("over".equals(line)) {
+				break;
+			}
+			bw.write(line.toUpperCase());
+			bw.newLine();
+			bw.flush();
+		}
+	}
+}
+
+```
 
 
 
+![](http://on7r0tqgu.bkt.clouddn.com/Fujl_39Ln5hKPjfEFpSHLrQv_frB.png )
 
-​	
+```java
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+
+public class TransStreamDemo2 {
+
+	public static void main(String[] args) throws IOException {
+		/*
+		 * 1. 将键盘录入的数据写入一个文件中
+		 * 2. 将一个文本内容显示到控制台
+		 */
+		demo1();
+		//demo2();
+	}
+
+	private static void demo2() throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));  //获取控制台的数据
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("A:\\2.txt")));
+		
+		String line = null;
+		while((line = br.readLine()) != null) {  //将控制台数据写入文本
+			bw.write(line);
+			bw.flush();
+		}
+	}
+
+	private static void demo1() throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("A:\\2.txt")));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		
+		String line = null;
+		while((line = br.readLine())!=null) {
+			bw.write(line);
+			bw.flush();
+		}
+	}
+}
+```
+
+转换流
+
+InputStreamReader: 	字节到字符的桥梁,解码
+
+OutputStreamWriter: 	字符到字节的桥梁,编码
 
 
+
+### 流的操作/使用规律
+
+之所以要弄清楚规律是因为流对象太多了,开发时候不知道用那个对象合适
+
+想要知道开发的时候用那个对象
+
+1. 明确源以及目的(汇)
+
+   1. 源: 	InputStream Reader
+   2. 目的: OutputStream Writer
+2. 明确数据是不是纯文本数据
+
+   1. 源:纯文本: Reader   不是 InputStream
+   2. 目的:纯文本 Writer 不是OutputStream
+3. 明确具体对象
+   1. 源设备
+      1. 硬盘:  File
+      2. 键盘:  System.in
+      3. 内存:  数组
+      4. 网络:  Socket流
+   2. 目的
+      1. 硬盘: File
+      2. 控制台:System.out
+      3. 内存:数组
+      4. 网络:Socket流
+4. 是否需要额为流对象
+   1. 是否需要缓冲区
+      1. 是 加上Buffer
+
+#### 需求
+
+1. 复制一个文本文件
+
+   1. 明确源和目的
+
+      1. 源 InputStream Reader
+      2. 目的 OutputStream Writer
+
+   2. 是不是纯文本
+
+      1. 是	使用字符流 源 Reader 目的: Writer 
+
+   3. 明确设施
+
+      ​	硬盘 : File
+
+      FileReader fr = new FileReader("a.txt");
+
+      FileWriter fr = new FileWriter("b.txt");
+
+   ​	需要缓冲区?
+
+   BufferedReader br = new BufferedReader( new FileReader("a.txt"));
+
+   BufferedWriter br = new BufferedWriter( new FileWriter("b.txt"));
+
+读取键盘录入信息 并写入文件
+
+InputStream is = System.in;
+
+FileWriter fw = new FileWriter("1.txt")
+
+优化
+
+InputStreamReader isr = new InputStreamReader(System.in)
+
+FileWriter fw = new FileWriter("1.txt")
+
+高效写入
+
+BufferedReader br = new BufferedReader( new InputStreamReader(System.in));
+
+BufferedWriter bw = new BufferedWriter(new FileWriter("1.txt"))
+
+### 转换流的编码解码
+
+需求将一个中文字符串按照指定的编码写入到一个文本文件
+
+既然明确了指定编码表,那么就不可以使用FileWriter,因为FileWriter内部是使用默认的本地码表
+
+只能使用其父类 OutputStreamWriter
+
+OutputStreamWriter 接受一个字节输出流对象,既然是操作文件,对象应该是FileOutputStream
+
+OutputStreamWriter  os = new OutputStreamWriter(new FileOutputStream("a.txt"),charsetName)
+
+```
+package readKey;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+
+public class TransStreamDemo3 {
+
+	public static void main(String[] args) throws IOException {
+		//writer();
+		//writer2();
+		readtext();
+	}
+
+	private static void readtext() throws IOException {
+//		FileReader fr= new FileReader("A:\\gbk_1.txt");
+//		char[] buf = new char[10];
+//		int len = fr.read(buf);
+//		String str = new String(buf,0,len);
+//		System.out.println(str);
+//		fr.close();
+		InputStreamReader osw = new InputStreamReader(new FileInputStream("A:\\gbk_1.txt"), "GBK");    //使用InputStreamReader可以指定编码格式
+		char[] buf = new char[10];
+		int len = osw.read(buf);
+		String str = new String(buf,0,len);
+		System.out.println(str);
+		osw.close();
+	}
+
+	private static void writer2() throws UnsupportedEncodingException, IOException {
+		/*
+		 * 如果需要指定码表 就要使用OutputStreamWriter
+		 */
+		OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("A:\\gbk_1.txt"), "UTF-8");
+		
+		osw.write("你好啊");
+		osw.close();
+	}
+
+	private static void writer() throws IOException {
+		/*
+		 * fileWriter 其实就是转换流指定了本机默认码表的体现
+		 * 而且这个转换流的子类对象,可以方便操作文本文件
+		 * 操作文件的字符流+本机的编码表  
+		 * 是便捷类
+		 */
+		FileWriter fw = new FileWriter("A:\\gbk_1.txt");
+		fw.write("你好");
+		fw.close();
+	}
+}
+```
+
+## File
+
+file对象一般用于对文件的操作
+
+```java
+package File;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Date;
+
+public class FilemethodDemo1 {
+
+	public static void main(String[] args) throws IOException {
+		/*
+		 * File对象常用方法
+		 * 1. 获取
+		 * 	1.1 获取文件大小
+		 * 	1.2 获取文件路径
+		 * 	1.3 获取文件名称
+		 * 	1.4 获取文件修改时间
+		 */
+			//demo1();
+		/*
+		 * 创建与删除
+		 */
+			//createFile();
+			//createdir();
+		/*
+		 * 判断
+		 */
+		//isDemo();
+		/*
+		 * 重命名
+		 */
+		//remove();
+		//获取文件属性
+		//listRootsDemo();
+	}
+	private static void listRootsDemo() {
+		File[] file = File.listRoots();
+		for (File file2 : file) {
+			System.out.println(file2);
+		}
+		File files = new File("D:\\");
+		System.out.println(files.getFreeSpace());   //可用空间
+		System.out.println(files.getTotalSpace());	//总容量
+		System.out.println(files.getUsableSpace());
+	}
+
+	private static void remove() {
+		File file = new File("A:\\2.txt");
+		System.out.println(file.renameTo(new File("A:\\1111.txt")));  //重命名 
+	}
+
+	private static void isDemo() {
+		File file = new File("A:\\1.txt");
+		System.out.println(file.exists());  //判断文件是否存在
+		//最好先判断时候存在 在判断文件 文件夹
+		System.out.println(file.isDirectory());		//判断是否文件
+		System.out.println(file.isFile());			//判断是否文件夹
+	}
+
+	private static void createdir() {
+		File file = new File("A:\\one");
+		//创建文件夹
+//		boolean d = file.mkdir();  //创建多级目录 mkdirs
+//		System.out.println(d);
+		//删除文件夹
+		System.out.println(file.delete());
+	}
+	
+
+	private static void createFile() throws IOException {
+		//文件的创建和删除
+		File file = new File("A:\\4.txt");
+		//和输出流不一样 如果文件不存在就创建true 如果存在 就不创建,同时返回false 
+		//boolean b = file.createNewFile();
+		//System.out.println("b="+b);
+		boolean r = file.delete();
+		System.out.println("r="+r);	
+	}
+	
+	
+	
+
+	private static void demo1() {
+		File file = new File("A:\\1.txt");
+		String name = file.getName();
+		String path = file.getPath();			//文件路径
+		String absPath = file.getAbsolutePath();//绝对路径
+		long len = file.length();				//获取字节数
+		long time = file.lastModified();  		//最后修改时间
+		
+		Date date = new Date(time);
+		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
+		String str_time = dateFormat.format(date);
+		
+		System.out.println(name);
+		System.out.println(path);
+		System.out.println(len);
+		System.out.println(str_time);
+	}
+}
+```
+
+### File的过滤器
+
+```java
+package File;
+
+import java.io.File;
+import java.io.FilenameFilter;
+
+public class FileListDemo {
+	public static void main(String[] args) {
+		
+		//demo();
+		//filterDemo();
+		filterDemo1();
+	}
+
+	private static void filterDemo1() {
+		File file = new File("c:\\");
+		File[] files = file.listFiles(new Filterjava(".BIN"));
+		for (File file1 : files) {
+			System.out.println(file1);
+		}
+		
+	}
+
+	private static void filterDemo() {
+		File file = new File("c:\\");
+		String[] names = file.list(new Filterjava(".java"));   //获取子文件目录,包含隐藏文件  感觉没必要 直接在forEach里面遍历
+		
+		for (String name : names) {
+			System.out.println(name);  
+		}
+	}
+
+	private static void demo() {
+		File file = new File("c:\\");   
+		//这里不可以放文件,必须是目录 否则会返回空指针
+		//调用list方法的File对象中封装的必须是目录
+		//访问系统级目录会发生空指针
+		// 如何目录不存在 数组为空
+		String[] names = file.list();   //获取子文件目录,包含隐藏文件
+		
+		for (String name : names) {
+			System.out.println(name);  
+		}
+	}
+}
+
+
+//对过滤器进行按参数锅炉
+class Filterjava implements FilenameFilter{
+	private String suffix;
+	public Filterjava(String suffix) {
+		super();
+		this.suffix = suffix;
+	}
+	@Override
+	public boolean accept(File dir, String name) {
+		
+		return name.endsWith(suffix);
+	}
+}
+```
 
