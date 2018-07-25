@@ -714,7 +714,7 @@ OutputStreamWriter: 	字符到字节的桥梁,编码
 
       FileWriter fr = new FileWriter("b.txt");
 
-   ​	需要缓冲区?
+   		需要缓冲区?
 
    BufferedReader br = new BufferedReader( new FileReader("a.txt"));
 
@@ -977,6 +977,278 @@ class Filterjava implements FilenameFilter{
 	public boolean accept(File dir, String name) {
 		
 		return name.endsWith(suffix);
+	}
+}
+```
+
+### 递归操作
+
+```java
+package File;
+
+public class recursiveDemo {
+
+	public static void main(String[] args) {
+		/*
+		 * 递归
+		 * 函数自身直接 或者间接的调用了自身
+		 * 
+		 */
+		//show(100);
+		
+		System.out.println(getSum(100));
+	}
+
+	private static int getSum(int i) {
+		if(i == 1) {
+			return 1;
+		}
+		return i+getSum(i-1);
+	}
+
+	private static void show(int num) {
+//		while(num>0) {
+//			System.out.println(num);
+//			num = num/2;
+//		}
+		if(num>0) {				//递归写法
+			System.out.println(num);
+			show(num/2);
+		}
+	}
+
+}
+```
+
+### 删除一个有若干文件的文件夹
+
+```java
+package File;
+
+import java.io.File;
+
+public class removeTest {
+
+	public static void main(String[] args) {
+		/*
+		 * 删除一个带内容的目录
+		 * 原理 从里往外删除
+		 * 需要进行深度遍历
+		 */
+		File file = new File("F:\\ss");
+		removedir(file);
+		
+	}
+
+	private static void removedir(File file) {
+		System.out.println(file.getName());		//打印文件名
+		File[] files = file.listFiles();		//获取当前目录的子目录
+		for (File file2 : files) {				//遍历获取的目录
+			if(file2.isDirectory()) {			//假如是文件 递归
+				removedir(file2);
+			}else {								//假如不是文件
+				System.out.println(file2+":"+file2.delete()); //直接删除
+			}
+		}
+		System.out.println(file+":::::"+file.delete());		//当前文件夹经过删除已经是空文件 可以删除了
+	}
+}
+```
+
+### properties的使用
+
+properties主要是与io结合操作win上面的配置文件
+
+```java
+package propertiesDemo;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.Set;
+
+public class propertiesDemo1 {
+
+	public static void main(String[] args) throws IOException {
+		/*
+		 * Map
+		 * 	|-- hashtable
+		 * 		|-- properties:
+		 * properties集合:
+		 * 	特点: 
+		 * 		1. 该集合中的将和值都是字符串类型
+		 * 		2.集合中的数据可以保存到流 或者从流里面获取
+		 * 
+		 * 通常用于操作键值对形式的文件
+		 * 
+		 */
+		//propertiesDemos();
+		/*
+		 * 演示properties集合与流对象
+		 */
+		//propertiesDemo_1();
+		
+		/*
+		 * 查看 修改 配置信息
+		 */
+		propertiesDemo_2();
+		
+		/*
+		 * 模拟prop.load(); 方法的实现			
+		 */
+		//propertiesDemo_3();
+	}
+
+	private static void propertiesDemo_3() throws IOException {
+		Properties prop = new Properties();
+		BufferedReader br = new BufferedReader(new FileReader("A:\\1111.txt"));
+		String line = null;
+		while((line = br.readLine()) != null) {
+			if(line.startsWith("#")) {
+				continue;
+			}
+			String[] arr = line.split("=");
+			prop.setProperty(arr[0],arr[1]);
+			
+		}
+		br.close();
+		prop.list(System.out);
+	}
+
+	private static void propertiesDemo_2() throws IOException {
+		Properties prop = new Properties();
+		//集合中的数据来自与文件,必须保证文件里面是键值对
+		File file = new File("A:\\1111.txt");
+		if(!file.exists()) {			//文件如果不存在就创建文件
+			file.createNewFile();
+		}
+		FileInputStream fos = new FileInputStream("A:\\1111.txt");
+		
+		//存储数据
+		prop.load(fos);	//把读取到的txt加入properties集合里面
+		
+		//修改文件
+		prop.setProperty("wangwu", "16");
+		
+		//再使用流将修改后的数据存进去
+		FileWriter fw = new FileWriter(file);
+		prop.store(fw, "first-commit");
+		
+		
+		prop.list(System.out);			//打印
+		
+	}
+
+	private static void propertiesDemo_1() throws IOException {
+		//创建一个properties对象
+		Properties prop = new Properties();
+		
+		//储存元素
+		prop.setProperty("zhangsan", "30");
+		prop.setProperty("lisi", "40");
+		prop.setProperty("wangwu", "50");
+		prop.setProperty("zhaoliu", "60");
+		prop.list(System.out);
+		//想要把这些数据持久化关联数据  --存储到文件
+		FileOutputStream fos = new FileOutputStream("A:\\1111.txt");
+		
+		//将集合数据存储起来
+		prop.store(fos, "name+age");   //这里使用的编码是ISO-8859-1
+		
+				
+	}
+
+	private static void propertiesDemos() {
+		//创建一个properties对象
+		Properties prop = new Properties();
+		
+		//储存元素
+		prop.setProperty("zhangsan", "30");
+		prop.setProperty("lisi", "40");
+		prop.setProperty("wangwu", "50");
+		prop.setProperty("zhaoliu", "60");
+		
+		
+		//修改元素
+		
+		prop.setProperty("wangwu",	"26");
+		//取出所有元素
+		Set<String> name = prop.stringPropertyNames();
+		for (String string : name) {
+			String value = prop.getProperty(string);
+			System.out.println(string+"::"+value);
+		}
+		
+	}
+}
+```
+
+### 获取文件夹里面所有子目录里面的指定的文件并储存到指定文件
+
+```java
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class TestDemo {
+//获取指定文件拓展名的文件(包含子目录里面)
+//这些文件的绝对路径写入一个文件夹里面
+	public static void main(String[] args) throws IOException {
+		/*
+		 * 必须进行深度遍历
+		 * 要在遍历的过程中进行过滤,将符合条件的内容储存到一个容器里面
+		 * 对容器中的内容进行遍历并写入文件中
+		 */
+		//指定查询的文件夹
+		File file = new File("A:\\pro");
+		//创建一个过滤器
+		FilenameFilter ff = new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				return  name.endsWith(".MYD");
+			}
+		};
+		//创建一个存储符合条件的list集合
+		List<File> list = new ArrayList<File>();
+		demo(file,ff,list);
+		File destfile = new File("A:\\1111.txt");  //指定存储的位置
+		writerText(list,destfile);
+	}
+	
+	//获取 过滤
+	private static void demo(File file,FilenameFilter filter,List<File> list) {
+		File[] files = file.listFiles();
+		for (File f : files) {
+			if(f.isDirectory()) {
+				demo(f,filter,list);
+			}else {
+				//使用过滤规则进行过滤
+				if(filter.accept(f, f.getName())) {
+					//符合要求的文件就存入List
+					list.add(f);
+				}
+			}
+		}
+	}
+	//写入
+	private static void writerText(List<File> list, File destfile) throws IOException {
+		BufferedWriter fs = new BufferedWriter(new FileWriter(destfile));
+		for (File file : list) {
+			fs.write(file.getAbsolutePath());
+			fs.newLine();
+			fs.flush();
+		}
+		fs.close();
 	}
 }
 ```
