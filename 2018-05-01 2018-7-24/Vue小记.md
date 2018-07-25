@@ -1,12 +1,10 @@
 # Vue小记
 
-java有点学不下去,还是深入一下vue吧
-
 ## Vue-Router
 
 ```
  <router-link to="/one" tag="button">跳转</router-link> 
-  <router-link to="/" replace>跳转回去</router-link>
+ <router-link to="/" replace>跳转回去</router-link>
 ```
 
 to是一个prop.指定需要跳转的路径,也可以使用v-bind动态设置
