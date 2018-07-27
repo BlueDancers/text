@@ -1,4 +1,17 @@
-#JavaScript的常见坑
+---
+title: JavaScript - 面试题
+date: 2018-3-24
+tags: 
+  - JavaScript
+  - 面试题
+categories: JavaScript
+---
+
+
+
+#JavaScript - 面试题
+
+这是某天在晚上看到的面试题,感觉挺不错的,于是记录了一下
 
 ##判断一个变量时候是null
 

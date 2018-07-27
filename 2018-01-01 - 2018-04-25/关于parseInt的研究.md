@@ -1,4 +1,11 @@
-#关于parseInt的看法
+---
+title: 关于parseInt的学习
+date: 2018-07-26
+tags: parselnt
+categories: JavaScript
+---
+
+#关于parseInt的学习
 
 ​     前面在看题目的时候 偶然看到 使用parseInt 来进行整数判断 但是这里的parseInt是错误示范
 

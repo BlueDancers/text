@@ -1,3 +1,13 @@
+---
+title: css实现隐藏多余溢出文字
+date: 2018-4-17
+tags: 
+  - css
+categories: css
+---
+
+
+
 # css实现隐藏多余溢出文字
 
 ```css
@@ -15,3 +25,4 @@
 
 ![](http://on7r0tqgu.bkt.clouddn.com/Fkz2uDoXXqMUn9jq0XG8S9IU9l-w.png)
 
+这个太常用了,又总是过一段时间就忘了,记录一下
