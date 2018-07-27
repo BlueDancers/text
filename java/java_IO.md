@@ -1253,3 +1253,105 @@ public class TestDemo {
 }
 ```
 
+## 其他流对象
+
+### 打印流
+
+```java
+package otherDemo;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+
+public class printDemo {
+
+	public static void main(String[] args) throws IOException {
+		
+		printStreamdemo();
+		printWiterdemo();
+	}
+
+	private static void printWiterdemo() throws IOException {
+		/*
+		 * PrintWriter 字符打印流
+		 * 构造函数的参数
+		 * 1. 字符串路径
+		 * 2. file对象
+		 * 3. 字节流对象
+		 * 4. 字符流对象
+		 */
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		PrintWriter out = new PrintWriter(new FileWriter("1111.txt"),true);//true为自动刷新  //使用对象把路径进行封装 就可以自动刷新了 
+		
+		String line = null;
+		while((line = br.readLine()) != null) {
+			if("over".equals(line)) {				
+				break;
+			}
+			out.println(line);
+			//out.flush();
+		}
+		out.close();
+		br.close();
+	}
+
+	private static void printStreamdemo() throws IOException {
+		/*
+		 * printStream
+		 * 1. 提供了打印方法,并保持数据的表现形式
+		 * 2. 不会抛出io异常
+		 * 构造函数接受三种类型的值 
+		 * 1. 字符串路径
+		 * 2. file对象
+		 * 3. 字节输出流
+		 */
+		PrintStream out = new PrintStream("A:\\1111.txt");
+		out.write(609);   //a   只写最低8位
+		//out.print(97);	   //97c  这里将97变成了字符串打印到了目的地
+		out.close();
+		
+	}
+}
+```
+
+### 序列流
+
+```java
+package otherDemo;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.SequenceInputStream;
+import java.util.Enumeration;
+import java.util.Vector;
+
+public class SequenceDemo {
+
+	public static void main(String[] args) throws IOException {
+		/*
+		 * 将两个文本文件合并到一个文件里面
+		 */
+		Vector<FileInputStream> v = new  Vector<FileInputStream>();
+		v.add(new FileInputStream("A:\\1111.txt"));
+		v.add(new FileInputStream("A:\\gbk_1.txt"));
+		Enumeration<FileInputStream> en = v.elements();
+		SequenceInputStream sis = new SequenceInputStream(en);
+		FileOutputStream fos = new FileOutputStream("A:\\1.txt");
+		byte[] bytes = new byte[1024];
+		int len = 0;
+		while((len = sis.read(bytes)) != -1) {			//合并文件
+			fos.write(bytes,0,len);
+		}
+	}
+}
+```
+
+后面的流,有兴趣再看
