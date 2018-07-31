@@ -1,4 +1,12 @@
-# node.js环境安装
+---
+title: node.js环境安装
+date: 2018-7-30
+tags: 
+  - node
+categories: node
+---
+
+
 
 首先环境配置
 
@@ -28,7 +36,7 @@ G:\>cd javaScript  //目录自己定啦
 G:\JavaScript>mkdir demo
 G:\JavaScript\demo>npm init -y
 G:\JavaScript\demo>npm install --save-dev webpack   //这里按官方文档来
-npm install --save lodash
+npm install --save lodash						  //工具库,不想用不安装也行,百度看看,挺好用的
 npm install webpack-cli -D                          //这是依赖 一定要下载
 npx webpack src/index.js --output dist/bundle.js    //一定要加 --output!!
 ```

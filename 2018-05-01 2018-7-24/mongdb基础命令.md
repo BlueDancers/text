@@ -1,4 +1,12 @@
-#mongdb命令
+---
+title: mongdb命令
+date: 2018-5-10
+tags: 
+  - mongdb
+categories: 数据库
+---
+
+
 
 cls 清屏
 

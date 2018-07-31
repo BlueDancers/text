@@ -1,4 +1,12 @@
-# cmder添加到右键菜单 以及一些问题
+---
+title: cmder添加到右键菜单 以及一些问题
+date: 2018-5-14
+tags: 
+  - cmder
+categories: 开发技巧
+---
+
+
 
 之前之中用 win自带的cmd 说实话 不太好用
 

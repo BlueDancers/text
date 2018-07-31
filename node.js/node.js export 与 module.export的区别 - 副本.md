@@ -2,7 +2,7 @@
 
 题外话 : 这两天准备上手 node.js 因为现在的使用 vue写的网站没有后端可以用,也不想用java做后端接口
 
-开始学习大名顶顶的node.js
+开始学习的node.js
 
 #####今天主要谈谈node.js上面 export 与 module.export的区别
 
@@ -37,3 +37,4 @@ console.log(module.export.name)      //张三
 在require 引用的 export 实际上是 module.export 所以 找不到 export赋值的对象 
 ```
 
+一句话:export 与 export default 的区别是 export default 是相对于 整个modal 导出 

@@ -1,4 +1,11 @@
-# JavaScript深入之参数按值传递
+---
+title: JavaScript深入之参数按值传递
+date: 2018-7-15
+tags: JavaScript
+categories: JavaScript
+---
+
+
 
 在《JavaScript高级程序设计》第三版 4.1.3，讲到传递参数： 
 
@@ -88,7 +95,7 @@ console.log(c);// {b: 1}
 
 ```JavaScript
 var value = 1;
-function foo() {
+function foo(value) {
     var v = value; // 创建变量v指向value所指向的值
     v = 2;// v重新指向另外的值
     console.log(v); //2

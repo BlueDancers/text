@@ -1,4 +1,11 @@
-#node 同步/异步写入文件
+---
+title: node 同步/异步写入文件
+date: 2018-5-6
+tags: node
+categories: node
+---
+
+
 
 题外话 : 也不知道现在学node是对是错 看招聘都要vue react
 

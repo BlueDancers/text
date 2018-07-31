@@ -1,4 +1,15 @@
-# Vue路由钩子 afterEach beforeEach区别
+---
+title: Vue路由钩子 afterEach beforeEach区别
+date: 2018-7-14
+tags: 
+  - vue
+  - vue-router
+categories: vue
+---
+
+使用vue已经有一段是时间了,这不断的写项目里面,基本上清楚了vue的这种与jq完成不一样的思想,越是研究越是感觉作者之强大,对vue SPA单页面里面最常用的vue-router组件,今天就谈谈这个,我使用的经验
+
+
 
 ​	vue-router作为vue里面最基础的服务,学习一段时间,对遇到的需求进行一些总结
 
@@ -114,7 +125,7 @@ router.afterEach((to, from) => {
 
 
 
-从使用的角度来说 前置钩子更加常用,比如登录验证 以及给Vue单页面引用规定网页名等等
+从使用的角度来说 前置钩子更加常用,比如**登录验证** 以及给**Vue单页面引用规定网页名**等等,这些案例我的github里面有,如果想了解一下思路可以看看
 
 ```
 router.beforeEach((to,from,next) => {

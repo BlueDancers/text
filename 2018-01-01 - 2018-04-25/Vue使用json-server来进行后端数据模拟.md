@@ -1,4 +1,11 @@
-# Vue使用json-server来进行后端数据模拟
+---
+title: Vue使用json-server来进行后端数据模拟
+date: 2018-4-16
+tags: 
+  - vue
+  - 模拟后台
+categories: vue
+---
 
   正开发过程中 前后端分离或者不分离 ,接口多半是之后与页面的开发 ,所以建立rest的APL的接口 给前端提供虚拟的数据是非常必要的 所以这里我使用了json-server作为工具,支持CORS和JSONP跨域请求，支持GET, POST, PUT, PATCH 和 DELETE 方法,更提供了一系列的查询方法，如limit，order等,接下来我把我自己的上使用心写成文档
 

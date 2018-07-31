@@ -1,4 +1,13 @@
-# 在Vue项目里面使用d3.js
+---
+title: 在Vue项目里面使用d3.js
+date: 2018-4-30
+tags: 
+  - vue
+  - D3.js
+categories: vue
+---
+
+
 
 之前写一个 Demo里面 有些东西要使用d3实现一些效果 但是在很多论坛找资源都找不到可以在Vue里面使用D3.js的方法,npm 上面的D3相对来说 可以说是很不人性化了 完全没有说 在webpack上怎么使用D3.js
 
