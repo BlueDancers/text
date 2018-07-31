@@ -1,10 +1,15 @@
-# 原型与原型链
+---
+title: JavaScript深入 - 原型与原型链
+date: 2018-4-26 
+tags: JavaScript
+categories: JavaScript
+---
 
 
 
-`今天看了github上面的某位大佬对原型与原型链的文章 讲解很透彻` 文章下面贴地址
+`今天看了github上面的某位大佬对原型与原型链的文章 讲解很透彻` 
 
-
+[原型与原型链]( https://github.com/mqyqingfeng/Blog/issues/2 )
 
 ### prototype
 
@@ -161,7 +166,11 @@ person.constructor === Person.prototype.constructor
 
 **继承意味着复制操作，然而 JavaScript 默认并不会复制对象的属性，相反，JavaScript 只是在两个对象之间创建一个关联，这样，一个对象就可以通过委托访问另一个对象的属性和函数，所以与其叫继承，`委托`的说法反而更准确些。**
 
-[原型与原型链]( https://github.com/mqyqingfeng/Blog/issues/2 )
+
+
+
+
+ps:但是难度有点高,讲的都是偏原理的东西,一段时间不看总是容易忘记,根本原因是对JavaScript原型链实际应用太少了,温故而知新吧
 
 
 

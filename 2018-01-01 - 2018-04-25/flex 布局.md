@@ -1,11 +1,27 @@
-# 微信小程序 UI 布局 
+---
+title: (flex) UI 布局
+date: 2018-7-30
+tags: 
+  - flex
+  - css布局
+categories: flex
+---
 
-微信小程序布局主要用两种(flex包含浮动布局)
 
-- flex布局
-- 相对定位与绝对定位
 
-关于理论,百度都有,不进行讲述,直接看案例
+# (flex) UI 布局 
+
+flex布局无论在pc端还是mobile端或者小程序端都是非常好的布局选择,完全可以代替浮动,非常有学习的必要
+
+在flex上面的下面三个教程就可以学会了
+
+[MDN上对flex布局的理解](https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Flexible_Box_Layout/Basic_Concepts_of_Flexbox)
+
+[flex阮一峰大神教程-1](http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html)
+
+[flex阮一峰大神教程-2](http://www.ruanyifeng.com/blog/2015/07/flex-examples.html)
+
+下面的是小程序端的
 
 > index.wxml
 
@@ -137,7 +153,15 @@ page{
 
 ```
 
+基本上正常情况下都可以使用的居中布局
 
+```css
+display: flex;
+justify-content: center;
+align-items:center;
+```
+
+​														--多学习,多总结,多努力,未来很美好
 
 
 

@@ -1,3 +1,12 @@
+---
+title: JavaScript深入之作用域链
+date: 2018-5-4
+tags: JavaScript
+categories: JavaScript
+---
+
+
+
 # JavaScript深入之作用域链
 
 ```
@@ -192,8 +201,5 @@ ECStack = [
 
 
 作为JavaScript里面很重要的概念 作用域链 可以参照JavaScript高级程序设计 P73 (执行环境与作用域) 好好理解 
-
-
-
 
 
