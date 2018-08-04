@@ -1,4 +1,4 @@
-# mysql使用指南
+# mysql使用指南-基础篇
 
 ## DDL -- Data Definition Language 数据库定义语言 
 
