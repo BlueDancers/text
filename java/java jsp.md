@@ -213,6 +213,38 @@ ${requestScope.emp.address.street }
   * cookie：Map<String,Cookie>类型，其中key是cookie的name，value是cookie对象。 ${cookie.username.value}
   * pageContext：它是PageContext类型！${pageContext.request.contextPath}
 
+fmt库
+  它是格式化库
+
+<fmt:formatDate value="" pattern="">
+
+value：指定一个Date类型的变量
+pattern：用来指定输出的模板！例如：yyyy-MM-dd HH:mm:ss
+
+--------------
+
+<fmt:formatNumber value="${num1}" pattern="0.00">
+  保留小数点后2位，它会四舍五入！如果不足2位，以0补位！
+
+<fmt:formatNumber value="${num1}" pattern="#.##">
+  保留小数点后2位，它会四舍五入！如果不足2位，不补位！
+
+### MVC
+
+ 它不是java独有，所有的B/S结构的项目都在使用它！
+
+ M -- model 模型(自己写代码)
+ V -- View  视图(jsp)
+ C -- Cotroller 控制器(Servlet)
+
+==========================================
+
+JavaWeb三层框架
+
+Web层 --> 与Web相关的内容(Servlet，JSP，Servlet相关API：request、response、session、ServletContext)
+业务层 --> 业务对象(Service)
+数据层 --> 操作数据库(DAO Data Access Object)(所有对数据库的操作，不能跳出到DAO之外)
+
 
 
 
