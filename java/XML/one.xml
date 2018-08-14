@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/css" href="one.css"?>
-<preson>
-  <name>张三</name>
-  <age>18</age>
-  <![CDATA[<b>if(a<b && c<d){}</b>]]>
-</preson>
