@@ -1,4 +1,4 @@
-# ES6 总结 技巧 面试
+# ES6 总结 技巧
 
 ## 模块化
 
@@ -18,7 +18,7 @@
 之前我在本地文件夹启动静态服务器 都是通过python或者vscode的`live server` 现在可以使用node去启动
 
 - 安装[http-server](https://www.npmjs.com/package/http-server)
-- 启动本地服务	
+	 启动本地服务	
 
 ```bash
 npm install http-server -g
