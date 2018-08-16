@@ -2,7 +2,7 @@
 
 ​	在开始接触JavaScript的时候,书上有一句话我记忆深刻,**JavaScript是一门单线程语言**,不管从什么途径去获取这个消息,前端开发者都会记住,哦~~,JavaScript是一门单线程语言,所以alert()会卡住
 
-​	我想问的是 **为什么JavaScript是一门单线程语言?因为什么原因让JavaScript出生就是单线程语言?**
+​	 **为什么JavaScript是一门单线程语言?因为什么原因让JavaScript出生就是单线程语言?**
 
 ​	提出问题,必然解决问题,从JavaScript出生说起,最开始JavaScript是配合html去完成对dom的控制,优化用户交互,于是问题来了
 
