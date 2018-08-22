@@ -302,3 +302,79 @@ function createElements(vnode) {
 
 patch(vnode,newVnode) //patch是核心diff算法
 
+```JavaScript
+
+function updatechildren(vnode,newVnode){
+  var children = vnode.children || []  //获取内部信息
+  var newChildren = newVnode.children || []
+
+  children.forEach((childVnode,index) => {
+    var newChildVnode = newChildren[index]  //获取遍历当前新的dmo节点的属性
+    
+    if (childVnode.tag === newChildVnode.tag){
+      //假如标签一样就递归遍历,直到找到不一样的
+      updatechildren(childVnode,newChildVnode);
+    }else {
+      replaceNode(childVnode,newChildVnode)
+    }
+  })
+}
+function replaceNode(childVnode, newChildVnode) {
+  //获取当前dom节点
+  var ele = document.getElementsByTagName(childVnode);
+  //创建新的dom节点
+  var newEle = createElements(newChildVnode)
+  //....替换 ...等等
+}
+```
+
+什么是diff算法?
+
+​	最初是linux基础命令,后来引用到vdom里面,因为vdom需要找出新的节点
+
+diff算法的实现
+
+​	patch(container,vnode) pathch(vnode,newVnode)
+
+核心逻辑
+
+​	创建元素(createElement) 更新元素(updatechildren)
+
+
+
+vdom是什么?为什么存在vdom
+
+vdom是虚拟dom,是使用js模拟的dom结构;因为dom操作很昂贵,所以将dom操作放在js层面,为了提高效率
+
+
+
+vdom如何使用? 核心函数是什么
+
+snabbdom为例子,上面的代码的简单实现
+
+核心函数是h函数和patch函数
+
+
+
+介绍diff算法
+
+diff算法是对比算法,很多工具都有diff对比命令
+
+vdom里面应用diff算法是为了找出所需更新你的节点
+
+实现  patch(container,vnode)创建 pathch(vnode,newVnode)更新
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
