@@ -119,15 +119,19 @@ MVVM三要素
 
 模板的本质是字符串,但是有一定的逻辑(v-for..)
 
-[with](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/with)
+- [with](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/with)
+- 模板信息都没
 
 在vue源码里面的10831行 或者搜索`code.render `打印出来看一下就知道了render渲染后的模板
 
+经过render函数的解析,最后返回的是vnode
 
+### Vue的整个实现流程
 
-
-
-
+1. 解析模板成render函数
+2. 响应式开始监听
+3. 首次渲染,显示页面,并且绑定依赖
+4. data属性变化,触发rerender
 
 
 

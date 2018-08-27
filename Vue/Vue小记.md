@@ -113,8 +113,7 @@ export default new Vuex.Store({
 ## Less
 
 ```
-npm install less  --save-dev
-npm install less-loader --save-dev
+npm install less less-loader --save-dev
 ```
 
 竟然不需要配置,,
