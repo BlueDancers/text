@@ -1,8 +1,26 @@
-# webpack4+Vue搭建项目
+# webpack4+Vue搭建自己的Vue-cli
 
-怎么说呢,尝试看了vue-cli的实现源码,深感知识浅薄,这两天有一只思考,也借助一些别人的实践,尝试自己搭建vue的项目,这里使用webpack4版本,关于webpack的知识本文不会多说,请看[webpack文档](https://webpack.docschina.org/concepts/)
+## 前言
 
-搭建基本骨架
+
+对于vue-cli的强大,使用过的人都知道,极大的帮助我们降低了vue的入门门槛
+
+最近在看webpack4，深感知识浅薄，这两天也一直在思考cli的配置，借助一些别人的实践，尝试自己搭建vue的项目，这里使用webpack4版本，之前我在网上查找别人的vue项目搭建,但是都是webpack3的,所以写了本文，如果有错误,或者有什么问题,请大佬们指出
+
+关于webpack的本文不会多说，请看[webpack文档](https://webpack.docschina.org/concepts/)
+
+关于本文的github地址[vue-MYCLI](https://github.com/vkcyan/vue-MYCLI)
+
+**你们的start是我发表的动力!!!!!**
+
+## 前置知识
+
+-  熟悉 webpack4
+-  熟悉 vue
+
+
+
+## 搭建基本骨架
 
 ```bash
 npm init
@@ -24,7 +42,7 @@ npm install webpack webpack-cli  --save-dev
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width， initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Vue</title>
 </head>
@@ -67,6 +85,8 @@ npx webpack --config webpack.config.js
 ![](http://on7r0tqgu.bkt.clouddn.com/FvWzvWyldX59S6xcQ5_h91n5guHd.png )
 
 这里说明环境是没有问题的
+
+## 配置初始生成环境
 
 开始安装vue-loader吧
 
@@ -165,10 +185,10 @@ npm run build
 
 这里有2个问题,一个是没有指定mode 一个是没有引用vue的插件
 
-我们需要改写webpack.config.js
+我们需要改写webpack.config.js,在config里面加一行
 
 ```
-
+mode: 'production',   //暂时指定为生产环境
 ```
 
 再次运行`npm run build` 会报错,需要安装一个包
@@ -237,6 +257,8 @@ module.exports = {
 
 接下来我们要完成的的配置开发环境
 
+## 配置开发环境
+
 关于开发环境以及生成环境,webpack是需要区分的,根据文档[模块](https://webpack.docschina.org/concepts/mode),我决定在命令里面指定模式,相应的就将开发环境以及生成环境分开,
 
 这里我使用的是提起基本的webpack配置使用`webpack-merge `这个包来拼接我们webpack配置
@@ -247,9 +269,13 @@ npm i webpack-merge -D
 
 修改配置文件
 
-将个个环境的代码区分开,webpack的结构是这样的
+将各各环境的代码区分开,webpack的结构是这样的
 
 ![](http://on7r0tqgu.bkt.clouddn.com/FiQ5N4R1WuxVe6qikN7CGBRlJKZB.png )
+
+![](http://on7r0tqgu.bkt.clouddn.com/Fh0WyWDfDAXF8ijpynJ6WHEjIUFv.png )
+
+
 
 webpack.config.base.js
 
@@ -347,9 +373,9 @@ module.exports = config
 
 接下来完善一下,不能只有.vue文件的loader,其他的webpack也要认识
 
-我们配置一下图片的loader,以及css的loader,css使用postcss进行预处理
+我们配置一下图片的loader,以及css的loader,同时css使用postcss进行预处理
 
-> url-loader 用于将文件转换为base64 URI     file-loader是依赖
+> url-loader 用于将文件转换为base64 URI     file-loader是依赖loader
 
 ````
 npm i url-loader file-loader -D
@@ -463,13 +489,13 @@ build后生成的目录是这样的
 
 `clean-webpack-plugin`这个插件不知道为什么,怎么配置路径都没效果
 
-这里我使用rimraf来进行删除
+这里我使用rimraf来进行删除(vue-cli也是使用rimraf,但是他是写在代码里面)
 
 ```bash
 npm install rimraf -D
 ```
 
-在package里面变一下脚本
+在package里面变一下脚本,让打包之前帮我们删除之前到打包文件
 
 ```bash
 "build-webpack": "webpack --mode=production --config build/webpack.config.build.js",
@@ -479,7 +505,7 @@ npm install rimraf -D
 
 
 
-分离打包css
+## 分离打包css
 
 > 它会将所有的入口 chunk(entry chunks)中引用的 `*.css`，移动到独立分离的 CSS 文件 
 
@@ -513,6 +539,167 @@ module: {
     }]
   },
 ```
+
+这样的话,我们开发环境不影响依旧是之前到模式,build的时候用ExtractTextPlugin帮我们分离非js文件,实现css的分离打包
+
+我们打包一下试试`npm run build`
+
+![](http://on7r0tqgu.bkt.clouddn.com/Fj_GZsAlIwLICy19Yquq3EuAOYqu.png )
+
+## 分离js文件
+
+接下来是分离js文件,就是将库文件以及我们的代码分离开,利于上线后的浏览器缓存,代码会经常变,库不会经常变
+
+在webpack4之前js分离用的插件是CommonsChunkPlugin,不过这插件现在移除了,现在用的是optimization.splitChunks 来进行公共代码与第三方代码的提取,splitChunks参数如下
+
+```
+optimization: {
+    splitChunks: { 
+      chunks: "initial",         // 代码块类型 必须三选一： "initial"（初始化） | "all"(默认就是all) | "async"（动态加载） 
+      minSize: 0,                // 最小尺寸，默认0
+      minChunks: 1,              // 最小 chunk ，默认1
+      maxAsyncRequests: 1,       // 最大异步请求数， 默认1
+      maxInitialRequests: 1,     // 最大初始化请求书，默认1
+      name: () => {},            // 名称，此选项课接收 function
+      cacheGroups: {                // 缓存组会继承splitChunks的配置，但是test、priorty和reuseExistingChunk只能用于配置缓存组。
+        priority: "0",              // 缓存组优先级 false | object |
+        vendor: {                   // key 为entry中定义的 入口名称
+          chunks: "initial",        // 必须三选一： "initial"(初始化) | "all" | "async"(默认就是异步)
+          test: /react|lodash/,     // 正则规则验证，如果符合就提取 chunk
+          name: "vendor",           // 要缓存的 分隔出来的 chunk 名称
+          minSize: 0,
+          minChunks: 1,
+          enforce: true,
+          reuseExistingChunk: true   // 可设置是否重用已用chunk 不再创建新的chunk
+        }
+      }
+    }
+  }
+```
+
+官方包括这解释,我并不是很看懂,所以打包策略并不是很好
+
+在webpack.config.build.js>config
+
+````JavaScript
+output: {
+    filename: '[name].[chunkhash:8].js'
+  },
+optimization: {
+    splitChunks: {
+      chunks: "all",
+      cacheGroups: {
+        vendor: {
+          test: /node_modules/,  //这里虽然分离了,但是没有做到按需引入,看官方配置也不是很明白
+          name: 'vendors',
+          chunks: 'all'
+        }
+      }
+    },
+    runtimeChunk: true
+  }
+````
+
+build一下查看目录,可以看出代码与库之间分离了
+
+![](http://on7r0tqgu.bkt.clouddn.com/Fk0Cs9a1ih6CSaZLhgP80MTO0hWc.png )
+
+关于eslint,我就不引入的,有兴趣可以讨论一下
+
+## .gitignore
+
+这里处理一下git 新建文件.gitignore
+
+```JavaScript
+.DS_Store
+node_modules/
+/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+```
+
+## .editorconfig,
+
+处理一下编译器的统一配置
+
+新建文件 .editorconfig,(关于[editorconfig](http://www.alloyteam.com/2014/12/editor-config/),以及配置解释)
+
+```
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+```
+
+还有一点要注意,假如没有效果,vscode需要安装一个插件`EditorConfig for VS Code  `,其他编译器不太清楚
+
+
+
+## .babelrc
+
+处理一下ES6,以及js文件的webpack的loader配置
+
+> 今天装了babel-loader8.0.0 报错报一上午,心态都搞崩了,所以这里我使用的是7版本
+
+```
+npm install babel-loader@7 babel-core babel-preset-env -D
+```
+
+在webpack.config.base.js>module>rules里面添加代码
+
+````JavaScript
+{
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader'
+}
+````
+
+新建文件 .babelrc
+
+```json
+{
+  "presets": [
+    "env"
+  ]
+}
+```
+
+首先检查开发环境
+
+我新建了一个es6语法的js 导入到app.vue里面
+
+![](http://on7r0tqgu.bkt.clouddn.com/FmZ8Vjf0BJQwKGz7jqt6XgT36Xom.png )
+
+运行结果
+
+![](http://on7r0tqgu.bkt.clouddn.com/FlJhUUj3tL3YkdZ3Gm3AgRxio_Ha.png )
+
+## 最后
+
+至此,基本的vue项目骨架的搭建完毕了,当然他没有vue-cli那么强大,或许最大的益处是让我们熟悉一个vue项目的大致webpack配置,当然我们可以一步一步的优化项目
+
+**可以走的慢,但是请不要停下来**
+
+
+
+
+
+
 
 
 

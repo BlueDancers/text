@@ -571,8 +571,6 @@ if (isDev) {
 module.exports = config
 ```
 
-明天配置自己的vue-cli
-
 
 
 
