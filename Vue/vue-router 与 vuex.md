@@ -519,21 +519,19 @@ npm install vuex -S
 
 ```JavaScript
 import Vuex from 'vuex'
-import Vue from 'vue'
-Vue.use(Vuex)
 
-const store = new Vuex.Store({
-  state: {
-    count: 0
-  },
-  mutations: {
-    updateCount (state, num) {
-      state.count = num
+export default () => {
+  return new Vuex.Store({
+    state: {
+      count: 0
+    },
+    mutations: {
+      updateCount (state, num) {
+        state.count = num
+      }
     }
-  }
-})
-
-export default store
+  })
+}
 ```
 
 在index.js里面引入
@@ -542,13 +540,16 @@ export default store
 import Vue from 'vue'
 import App from './app.vue'
 import VueRouter from 'vue-router'
-
+import Vuex from 'vuex'
 import './assets/style/global.styl'
 import createRouter from './config/router'
-import store from './store/store'
+import createstore from './store/store'
 
 Vue.use(VueRouter)
+Vue.use(Vuex)
+
 const router = createRouter()
+const store = createstore()
 
 new Vue({
   el: '#root',
@@ -558,13 +559,455 @@ new Vue({
 })
 ```
 
+### mutations
+
+mutations里面的方法可以通过commit来进行使用
+
+````
+mounted () {
+    console.log(this.$store)
+    let i = 1
+    setInterval(() => {
+      this.$store.commit('updateCount', i++)
+    }, 2000)
+  },
+  computed: {
+    count () {
+      return this.$store.state.count
+    }
+  }
+````
+
+在应对大型的数据的时候,我么你的vuex尽可能的分模块,
+
+```javascript
+import Vuex from 'vuex'
+import defaultState from './state/state'
+import defauleMutations from './mutations/mutations'
+export default () => {
+  return new Vuex.Store({
+    state: defaultState,
+    mutations: defauleMutations
+  })
+}
+
+```
 
 
 
+### getters
+
+getters可以对data数据进行二次处理
+
+````JavaScript
+export default { // 可以理解为computed
+  fullName (state) {
+    return `姓名:${state.name},年龄:${state.count}`
+  }
+}
+````
 
 
 
+```JavaScript
+computed: {
+    count () {
+      return this.$store.state.count
+    },
+    fullName () {
+      return this.$store.getters.fullName
+    }
+  }
+```
 
+
+
+> 使用es7 甚至es8的语法
+
+```
+npm install babel-preset-stage-1 -D
+```
+
+
+
+`this.$store.state.count`这样的写法并不是很好,官方提供了一个辅助函数`mapState`,当一个组件需要获取多个状态时候，将这些状态都声明为计算属性会有些重复和冗余。为了解决这个问题，我们可以使用 `mapState` 辅助函数帮助我们生成计算属性 
+
+##### mapState
+
+````JavaScript
+import { mapState } from 'vuex'
+computed: {
+    ...mapState(['count']),
+  }
+````
+
+还可以是对象或者函数的写法
+
+````
+ ...mapState({
+      counter: 'count'
+    }),
+````
+
+ ```
+...mapState({
+      counter: (state) => {
+        return state.count
+      }
+    }),
+ ```
+
+##### mapGetters 
+
+```JavaScript
+...mapGetters(['fullName'])
+
+//..............
+
+...mapGetters({
+      fullName: 'fullName'
+})
+```
+
+### mutations
+
+更改 Vuex 的 store 中的状态的唯一方法是提交 mutation。Vuex 中的 mutation 非常类似于事件：每个 mutation 都有一个字符串的 **事件类型 (type)** 和 一个 **回调函数 (handler)**。
+
+假如要传递多个参数
+
+```JavaScript
+updateCount (state, { num, num2 }) {
+    console.log(num2)
+    state.count = num
+  }
+```
+
+传一个对象,返回通过解构去得到参数
+
+当然数据可以直接修改,但是不推荐这么做
+
+我们在开发环境可以使用strict去限制
+
+````
+const isDev = process.env.NODE_ENV === 'development'
+
+export default () => {
+  return new Vuex.Store({
+    strict: isDev,
+    state: defaultState,
+    mutations,
+    getters
+  })
+}
+
+````
+
+这时候我么在去直接修改store里面的数值,vue就发出警告
+
+````JavaScript
+this.$store.state.count = 1
+````
+
+````base
+[Vue warn]: Error in callback for watcher "function () { return this._data.$$state }": "Error: [vuex] Do not mutate vuex store state outside mutation handlers."
+````
+
+### actions
+
+这就是异步的mutations,但是我们可以再actions里面处理mutations,使用promise来进行控制等等
+
+```JavaScript
+export default {
+  updateCountSync (store, data) {
+    setTimeout(() => {
+      store.commit('updateCount', data.num)
+    }, data.time)
+  }
+}
+// .....
+this.updateCountSync({
+   time: 2000,
+   num: 5
+})
+```
+
+### mapActions, mapMutations 
+
+>  组件绑定的辅助函数
+
+```JavaScript
+import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
+// .....
+ methods: {
+    ...mapActions(['updateCountSync']),
+    ...mapMutations(['updateCount'])
+  }
+// .......
+mounted () {
+  this.updateCountSync({
+    time: 2000,
+    num: 5
+  })
+  let i = 1
+  setInterval(() => {
+  	this.updateCount(i++)
+  }, 2000)
+}
+```
+
+
+
+## Vuex的模块化
+
+当业务变的非常庞大的时候,业务的所有状态都会集中在一个对象里面,当业务变动非常复杂的时候,vue允许我们将store分割成模块(module),每个模块都有他的state、mutation、action、getter 
+
+### state
+
+```
+export default () => {
+  return new Vuex.Store({
+    strict: isDev,
+    state: state,
+    mutations,
+    getters,
+    actions,
+    modules: {
+      a: {
+        state: {
+          text: 1
+        }
+      },
+      b: {
+        state: {
+          text: 2
+        }
+      }
+    }
+  })
+}
+```
+
+调用
+
+```JavaScript
+testA () {
+      return this.$store.state.b.text
+},
+```
+
+或者
+
+```
+...mapState({
+     textA: state => state.a.text
+   }),
+```
+
+### mutations
+
+> 用法和全局mutations一样,vue会自动给我们挂载到全局
+>
+> 当然可以设置单独的命名空间
+
+```JavaScript
+a: {
+        namespaced: true, // 设置单独的命名空间
+        state: {
+          text: 1
+        },
+        mutations: {
+          updateText (state, text) {
+            console.log(state)
+            state.text = text
+          }
+        }
+      },
+ // .........
+methods: {
+ ...mapMutations(['updateCount', 'a/updateText'])
+}
+
+mounted () {
+  this['a/updateText'](123)  //调用
+}
+```
+
+### getters
+
+```javascript
+getters: {
+          textPlus (state) {
+            return `我是${state.text}`
+          }
+        }
+//...........
+computed: {
+  ...mapGetters(['fullName', 'a/textPlus'])
+}
+mounted () {
+  this['a/updateText'](123)
+}
+```
+
+这样写没办法写在模板里面,我们可以改一下代码
+
+```
+  ...mapGetters({
+      'fullName': 'fullName',
+      'textPlus': 'a/textPlus'
+    })
+```
+
+这样在模板里面就可以{{ textPlus }} 使用了
+
+### 在局部vuex里面可以获取全局的vuex的state
+
+```JavaScript
+ getters: {
+          textPlus (state, getters, rootState) { // 第二参数是所有getters的方法 第三参数是全局的state
+            return `我是${state.text},全局state${rootState.count}`
+          }
+        }
+```
+
+既然可以获取全局,必然可以获取你想要的模块的state
+
+### actions 
+
+关于actions基本功能和上面类似,但是在分模块上面存在全局 以及模块将的数据调用
+
+````JavaScript
+	 actions: {
+          add ({ state, commit, rootState }) {
+            // commit('updateText', 20)
+            commit('updateCount', 100, {root: true}) // 加上{root: true}就是调用全局的vex的mutations
+          }
+        }
+````
+
+调用上面个mutations一样的,以为呢这里加入了命名空间,所以调用要加前缀
+
+```JavaScript
+methods: {
+    ...mapActions(['updateCountSync', 'a/add']),
+    ...mapMutations(['updateCount', 'a/updateText'])
+  }
+mounted () {
+    console.log(this.$store)
+    // this.updateCountSync({
+    //   time: 2000,
+    //   num: 5
+    // })
+    let i = 1
+    setInterval(() => {
+      this.updateCount(i++)
+    }, 2000)
+    this['a/add']()
+  },
+```
+
+### 动态注册模块
+
+模块动态注册功能使得其他 Vue 插件可以通过在 store 中附加新模块的方式来使用 Vuex 管理状态。例如，[`vuex-router-sync`](https://github.com/vuejs/vuex-router-sync) 插件就是通过动态注册模块将 vue-router 和 vuex 结合在一起，实现应用的路由状态管理。 
+
+```JavaScript
+store.registerModule('c', {
+  state: {
+    text: 33232323
+  }
+})
+```
+
+
+
+## vuex的热重载
+
+关于vuex的来热重载,官方给了详细的配置[热重载](https://vuex.vuejs.org/zh/guide/hot-reload.html#%E7%83%AD%E9%87%8D%E8%BD%BD)
+
+这里根据我自己的环境来配置热重载
+
+```javascript
+import Vuex from 'vuex'
+import state from './state/state'
+import mutations from './mutations/mutations'
+import getters from './getters/getters'
+import actions from './actions/actions'
+const isDev = process.env.NODE_ENV === 'development'
+
+export default () => {
+  const store = new Vuex.Store({
+    strict: isDev,
+    state: state,
+    mutations, // 同步方法
+    getters, // 处理state
+    actions // 异步方法
+  })
+  if (module.hot) {
+    module.hot.accept([
+      './state/state',
+      './mutations/mutations',
+      './getters/getters',
+      './actions/actions'
+    ], () => {
+      const newState = require('./state/state').default
+      const newMutations = require('./mutations/mutations').default
+      const newGetters = require('./getters/getters').default
+      const newActions = require('./actions/actions').default
+
+      store.hotUpdate({
+        state: newState,
+        mutations: newMutations,
+        getters: newGetters,
+        actions: newActions
+      })
+    })
+  }
+  return store
+}
+```
+
+## Vuex的其他API
+
+store.watch
+
+```JavaScript
+store.watch(
+  (state) => {
+    return state.count
+  },
+  (newCount) => {
+    console.log('state的count更新了', newCount)
+  }
+)
+```
+
+只要state,count发生变化,就会执行回调
+
+要停止侦听，调用此方法返回的函数即可停止侦听
+
+store.subscribe   订阅 store 的 mutation 
+
+```JavaScript
+store.subscribe((mutations, state) => {
+  console.log(mutations.type) // 传入的值
+  console.log(mutations.payload) // 接受的参数
+})
+```
+
+只要mutations被调用,就会触发这个
+
+store.subscribeAction 订阅 store 的 action
+
+```javascript
+store.subscribeAction((action, state) => {
+  console.log(action.type) // 传入的值
+  console.log(action.payload) // 接受的参数
+})
+```
+
+一个vuex+vue-router的项目构架
+
+![](http://on7r0tqgu.bkt.clouddn.com/FtOzc0LclVcvmX62-7IVAvacI3Sh.png )
 
 
 
