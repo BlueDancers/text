@@ -1,4 +1,10 @@
-
+---
+title: cookie sessionStorage localStorage
+date: 2018-8-20
+tags: 
+  - JavaScript
+categories: 浏览器存储
+---
 
 # cookie sessionStorage localStorage
 

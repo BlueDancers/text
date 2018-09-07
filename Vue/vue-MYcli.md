@@ -1,9 +1,12 @@
+---
+
+---
+
+
+
 # webpack4+Vue搭建自己的Vue-cli
 
 ## 前言
-
-
-对于vue-cli的强大,使用过的人都知道,极大的帮助我们降低了vue的入门门槛
 
 最近在看webpack4，深感知识浅薄，这两天也一直在思考cli的配置，借助一些别人的实践，尝试自己搭建vue的项目，这里使用webpack4版本，之前我在网上查找别人的vue项目搭建,但是都是webpack3的,所以写了本文，如果有错误,或者有什么问题,请大佬们指出
 
@@ -11,7 +14,13 @@
 
 关于本文的github地址[vue-MYCLI](https://github.com/vkcyan/vue-MYCLI)
 
-**你们的start是我发表的动力!!!!!**
+### 基础版本
+
+​	完成了基本的js vue css 的配置 [基础版本](https://github.com/vkcyan/vue-MYCLI/tree/master)
+
+### 完整版本
+
+​	安装了**vue-router vuex less eslint**,webpack配置已经调整完毕,基本可以使用 [完整版本](https://github.com/vkcyan/vue-MYCLI/tree/comprehensive)
 
 ## 前置知识
 
@@ -247,10 +256,6 @@ module.exports = {
 
 ![](http://on7r0tqgu.bkt.clouddn.com/Fn1OK7lN1Z1qOermZkVRWWLiwrt1.png )
 
-启动一个静态服务器
-
-![](C:\Users\spring\AppData\Local\Temp\1535450531104.png)
-
 打包Vue程序完成~~~~
 
 至此完成了最基本的webpack配置
@@ -273,16 +278,12 @@ npm i webpack-merge -D
 
 ![](http://on7r0tqgu.bkt.clouddn.com/FiQ5N4R1WuxVe6qikN7CGBRlJKZB.png )
 
-![](http://on7r0tqgu.bkt.clouddn.com/Fh0WyWDfDAXF8ijpynJ6WHEjIUFv.png )
-
 
 
 webpack.config.base.js
 
 ```JavaScript
 const path = require('path')
-
-
 
 const config =  {
   entry: path.resolve(__dirname, '../src/index.js'), 
@@ -400,7 +401,7 @@ npm i url-loader file-loader -D
 
 ```
 npm install css-loader -D
-npm install style-loader -D
+npm install vue-style-loader -D
 npm install postcss-loader -D
 ```
 
@@ -410,8 +411,8 @@ npm install postcss-loader -D
 {
         test: /\.css$/,
         use: [
+          'vue-style-loader',
           'css-loader',
-          'style-loader',
           {
             loader: 'postcss-loader',
             options: {
@@ -525,7 +526,7 @@ module: {
     rules: [{
       test: /\.css$/,
       use: ExtractTextPlugin.extract({
-        fallback: "style-loader",
+        fallback: "vue-style-loader",
         use: [
           'css-loader',
           {
@@ -603,8 +604,6 @@ optimization: {
 build一下查看目录,可以看出代码与库之间分离了
 
 ![](http://on7r0tqgu.bkt.clouddn.com/Fk0Cs9a1ih6CSaZLhgP80MTO0hWc.png )
-
-关于eslint,我就不引入的,有兴趣可以讨论一下
 
 ## .gitignore
 
@@ -689,12 +688,82 @@ npm install babel-loader@7 babel-core babel-preset-env -D
 
 ![](http://on7r0tqgu.bkt.clouddn.com/FlJhUUj3tL3YkdZ3Gm3AgRxio_Ha.png )
 
+## eslint
+
+eslint的安装相对简单,可以看[官方指南](https://github.com/standard/eslint-config-standard)
+
+```
+npm install --save-dev eslint eslint-config-standard eslint-plugin-standard eslint-plugin-promise eslint-plugin-import eslint-plugin-node
+```
+
+因为.vue文件不会是纯js代码,所以,我们需要安装额外的解析的插件 
+
+```
+npm install eslint-plugin-html -D
+```
+
+然后我们配置eslint到我们的项目
+
+在根目录新建文件.eslintrc
+
+```JavaScript
+{
+  "extends": "standard",
+  "plugins": [
+    "html"
+  ],
+  "rules": {
+    "no-new": "off"  //因为new Vue但是eslint默认不许new 我们需要把这个关掉
+  }
+}
+```
+
+在package里面添加两行脚本
+
+```
+    "lint": "eslint --ext .js --ext .jsx --ext .vue src/",
+    "lint-fix": "eslint --fix --ext .js --ext .jsx --ext .vue src/"
+```
+
+现在运行`npm run lint`即检查项目
+
+运行`npm run lint-fix`,即是将不规范的地方修正
+
+下一步我们配置到我们的webpack里面让运行的时候同时检查代码
+
+```
+npm install eslint-loader babel-eslint -D
+```
+
+改写配置文件 
+
+```
+{
+  "extends": "standard",
+  "plugins":[
+    "html"
+  ],
+  "parser":"babel-eslint",
+  "rules": {
+    "no-new": "off"
+  }
+}
+```
+
+在webpack.config.base里面的module> rules 里面加一个字段 
+
+```
+{
+        test: /\.(vue|js|jsx)$/,
+        loader: 'eslint-loader',
+        exclude:/node_modules/,
+        enforce: 'pre'     //预处理
+      }
+```
+
 ## 最后
 
-至此,基本的vue项目骨架的搭建完毕了,当然他没有vue-cli那么强大,或许最大的益处是让我们熟悉一个vue项目的大致webpack配置,当然我们可以一步一步的优化项目
-
-**可以走的慢,但是请不要停下来**
-
+至此,基本的vue项目骨架的搭建完毕了,后面还有vue-router 以及vuex less的安装,请查看我的[github](https://github.com/vkcyan/vue-MYCLI/tree/comprehensive),当然他没有vue-cli那么强大,或许最大的益处是让我们熟悉一个vue项目的大致webpack配置,当然我们可以一步一步的优化项目
 
 
 

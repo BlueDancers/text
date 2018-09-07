@@ -1,4 +1,14 @@
-# Vue-router与Vuex
+---
+title: Vue-router与Vuex
+date: 2018-8-28
+tags: 
+  - Vue
+categories: Vue
+---
+
+
+
+# Vue-router与Vuex特性总结
 
 一直以来,写vue项目一直都是使用cli去帮我们生成,一切都帮我们做好了,回头自己搭建项目,发现很多配置都是很麻烦的,也很有价值,本文章就记录自己搭建的vue
 

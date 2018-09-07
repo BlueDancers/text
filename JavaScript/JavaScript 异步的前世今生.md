@@ -1,3 +1,11 @@
+---
+title: JavaScript - 异步的前世今生
+date: 2018-8-20
+tags: 
+  - JavaScript
+categories: 异步JavaScript
+---
+
 # JavaScript - 异步的前世今生
 
 ​	在开始接触JavaScript的时候,书上有一句话我记忆深刻,**JavaScript是一门单线程语言**,不管从什么途径去获取这个消息,前端开发者都会记住,哦~~,JavaScript是一门单线程语言,所以alert()会卡住

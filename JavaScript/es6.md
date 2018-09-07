@@ -1,3 +1,11 @@
+---
+title: ES6 总结 技巧
+date: 2018-8-15
+tags: 
+  - ES6
+categories: JavaScript
+---
+
 # ES6 总结 技巧
 
 ## 模块化
