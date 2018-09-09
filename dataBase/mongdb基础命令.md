@@ -8,6 +8,26 @@ categories: 数据库
 
 
 
+#### 登录
+
+```
+ mongo
+```
+
+创建数据库
+
+```
+ db todoList
+```
+
+插入表
+
+````bash
+db.list.insert({})
+````
+
+
+
 cls 清屏
 
 show dbs   //显示当前所有数据库
