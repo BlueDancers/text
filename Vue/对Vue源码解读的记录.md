@@ -799,6 +799,92 @@ updateComponent = () => {
     }
 ```
 
+new Watcher()后就会render函数了`src/core/instance/render.js`
+
+render函数在data没有解析之前就开始解析dom
+
+首先在`src/platforms/web/runtime/index.js`,也就是new Vue的时候
+
+执行`initMixin(Vue)` 开始`src/core/instance/init.js`开始初始化render`initRender(vm)`
+
+开始执行`src/core/instance/render.js`下的initrender
+
+里面有两种渲染模式
+
+```JavaScript
+vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false) // template模板
+vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true) // render函数
+```
+
+这里没有执行,仅仅是添加到vm实例上面
+
+````JavaScript
+if (process.env.NODE_ENV !== 'production') {
+    defineReactive(vm, '$attrs', parentData && parentData.attrs || emptyObject, () => {
+      !isUpdatingChildComponent && warn(`$attrs is readonly.`, vm)
+    }, true)
+    defineReactive(vm, '$listeners', options._parentListeners || emptyObject, () => {
+      !isUpdatingChildComponent && warn(`$listeners is readonly.`, vm)
+    }, true)
+  } else {
+    defineReactive(vm, '$attrs', parentData && parentData.attrs || emptyObject, null, true)
+    defineReactive(vm, '$listeners', options._parentListeners || emptyObject, null, true)
+  }
+````
+
+判断开发环境以及生成环境进行劫持,假如出错了,开发环境报错,生成环境不报错 
+
+在执行`Vue.prototype._render`
+
+```JavaScript
+vnode = render.call(vm._renderProxy, vm.$createElement) //vm._renderProxy = vm  vm.$createElement render生成完毕
+```
+
+这里生成了vnode
+
+验证挂载点
+
+```JavaScript
+if (process.env.NODE_ENV !== 'production' && Array.isArray(vnode)) { // isArray 判断通过 说明有多个根节点 会报错
+```
+
+最后返回出去生成的vnode节点
+
+生成Vnode后,就需要去创建dom节点了
+
+````JavaScript
+createElement(vm, a, b, c, d, false)
+````
+
+`src/core/vdom/create-element.js`
+
+```JavaScript
+export function createElement (
+  context: Component,
+  tag: any,
+  data: any,
+  children: any,
+  normalizationType: any,
+  alwaysNormalize: boolean
+): VNode | Array<VNode> {
+    if (Array.isArray(data) || isPrimitive(data)) { // 假如data不存在,就将属性前移 为什么前移????? 解决偏移?
+    normalizationType = children
+    children = data
+    data = undefined
+  }
+  if (isTrue(alwaysNormalize)) { // 对于 template 以及 render 分配不一样的常量
+    normalizationType = ALWAYS_NORMALIZE
+  }
+  return _createElement(context, tag, data, children, normalizationType)
+}
+```
+
+越来越看不懂...
+
+
+
+
+
 
 
 
