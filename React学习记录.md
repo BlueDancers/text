@@ -128,3 +128,101 @@ props , state 与 render函数
 1. 解析jsx模板 生成虚拟DOM树,渲染到到真实dom
 2. state或者props的数据发生变化的时候,重新生成Vdom,与原始的Vdom进行对比,找到变化的地方,然后在真实dom上面,只改变那一部分的dom元素,达到节约性能的作用
 
+ >  在设定key值的时候,应该使用定值作为key 方便与建立对比的联系,用于diff算法的更新
+
+ >  setState是异步的 多次的setState会被合并成为一个setSate进行vdom更新
+
+ >  vdom发生变化,开始递归对比react一旦比对到虚拟dom的不同,将不会再继续进行比较,将不同的的同层虚拟dom进行替换
+
+
+
+React中的ref的使用
+
+ref主要是用来获取dom,返回操作dom用的东西
+
+```
+// 当ref属性是回调函数时，函数接收底层DOM元素或类实例（取决于元素的类型）作为其参数
+// 这里的this.input 为render的this下面 那么可以获取到render的this方法都可以获取到ref的内容
+// res属于操作dom 一般情况下不推荐使用 使用e.target 数据流进行获取dom
+// 这里的this指向当前的render函数,所以 在render函数里面的方法都可以访问到
+```
+
+示例
+
+```react
+<input
+            type="text"
+            value={this.state.inputValue}
+            onChange={this.updateInput.bind(this)}
+            ref={input => { // 
+              this.input = input; 
+            }}
+          />
+// .......
+updateInput(e) {
+    console.log(e.target);
+    console.log(this.input); // 与e.target一样 但是this.input可以操作原始dom
+    console.log(this.ul.querySelectorAll('li').length);
+    
+    this.setState({
+      inputValue: e.target.value
+    });
+  }
+```
+
+
+
+react的生命周期函数
+
+> 生命周期函数指的是某一时刻组件会自动调用执行的函数
+
+```JavaScript
+// 初始化 Initializing 初始化也就是constructor的过程 初始化state props
+```
+
+```JavaScript
+// 挂载 Mounting  
+// componentDidMount> render > componentDidMount 
+
+  componentWillMount () {
+    console.log('即将被挂载到页面的时候执行');
+  }
+  render() {
+    console.log('render 挂载执行'); // 每次改变都会执行render函数
+  }
+  componentDidMount () {
+    console.log('被挂载完毕之后执行');
+  }
+```
+
+```JavaScript
+//更新 updation
+	
+// state / props
+ shouldComponentUpdate () {
+    //shouldComponentUpdate?? 组件需要被更新吗?
+    console.log('shouldComponentUpdate  ','你的组件需要被更新吗? 我返回true,我需要被更新');
+    return true
+  }
+  componentWillUpdate () {
+    console.log('componentWillUpdate  ','组件被更新之前会自动执行,但是在 shouldComponentUpdate 之后执行 如果 shouldComponentUpdate 返回false 将不会被执行');
+  }
+  render() {
+    console.log('render 挂载执行'); // 每次改变都会执行render函数
+  }
+// 子组件执行
+  componentWillReceiveProps () {
+    console.log('子组件 componentWillReceiveProps','当组件从父组件接受了参数 只要父组件的render      函数被重新执行 子组件的这个生命周期函数就会被执行 ');
+   }
+  render() {
+    console.log('子组件render函数执行');
+  }
+  componentDidUpdate () {
+    console.log('componentDidUpdate  ', '组件已经更新完成');
+  }
+// 当组件卸载的时候
+  componentWillUnmount () {
+    console.log('componentWillUnmount  ', '即将被卸载的时候执行');
+  }
+```
+
