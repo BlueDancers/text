@@ -226,3 +226,231 @@ react的生命周期函数
   }
 ```
 
+
+
+关于 `shouldComponentUpdate`的使用
+
+> 子组件在父组件里面,每次父组件刷新的时候,子组件的render函数也就会渲染子组件,则会造成性能浪费
+
+```javascript
+//解决办法
+// 在子组件里面的`shouldComponentUpdate`进行判断当前的props是否发生变化,进而决定子组件是否刷新
+
+shouldComponentUpdate (nextProps,nextState) { // 接下来props/state变化成什么样
+    // 对比变化的props里面的值与当前的是否一样 不一样再去更新组件 一样 就不去渲染组件
+    if (nextProps.content !== this.props.content){
+      return true
+    } else {
+      return false
+    }
+  }
+```
+
+关于页面的请求
+
+> 建议将 异步请求 放在`	componentDidMount`里面最合理
+
+```
+componentDidMount() {
+    axios.get('/...')
+    .then()
+    .catch()
+  }
+```
+
+关于mock接口
+
+[Charles下载](https://www.charlesproxy.com/)
+
+[Charles 从入门到精通](https://blog.devtang.com/2015/11/14/charles-introduction/)
+
+这里使用本地mock的工具charles 网络封包截取工具 
+
+使用它进行接口的mock 也就是修改网络请求内容
+
+打开软件 tools > map Local.. > add > 添加地址 以及代理的地址 就完成了接口的,模拟
+
+
+
+react的css动画
+
+一个react的动画库 [react-transition-group](https://reactcommunity.org/react-transition-group/)
+
+```
+npm install react-transition-group --save
+```
+
+```react
+import { CSSTransition } from 'react-transition-group';
+
+ <Fragment>
+     <CSSTransition 
+     in={this.state.show}  // 判断动画的依据
+     timeout={1000} // 持续时间 1000毫秒
+     classNames='fade' // 定义动画的名称
+     unmountOnExit // 消失的时候将dom也删除了
+     onEnter={(el) => { // js的动画表现形式
+     el.style.color = 'blue'
+     }}
+     appear={true} // 第一次进入也会执行动画
+     >
+         <div>hello</div>
+     </CSSTransition>
+     <button onClick={this.handleToogle}>
+     	切换
+     </button>
+ </Fragment>
+
+ // css ...
+ .fade-enter,.fade-appear {
+  /* 入场动画执行的第一时刻  */
+  opacity: 0;
+}
+.fade-enter-active,.fade-appear-active {
+  /* 动画过渡中..... */
+  opacity: 1;
+  transition: all 1s;
+}
+.fade-enter-done {
+  /* 动画完成后*/
+  opacity: 1;
+}
+.fade-exit {
+  /* 出场动画执行的第一时刻 */
+  opacity: 1;
+}
+.fade-exit-active {
+  /* 动画过渡中..... */
+  opacity: 0;
+  transition: all 1s;
+}
+.fade-exit-done {
+   /* 动画完成后*/
+  opacity: 0;
+}
+```
+
+多div动画的使用
+
+也就是在外层进行 TransitionGroup 的包裹
+
+```react
+import React, { Component,Fragment } from 'react'
+import {
+  CSSTransition,
+  TransitionGroup,
+} from 'react-transition-group';
+import './App.css'
+export default class App extends Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      show: true,
+      list: []
+    }
+    this.handleToogle = this.handleToogle.bind(this)
+  }
+  render() {
+    return (
+      <Fragment>
+        <TransitionGroup>
+        {
+          this.state.list.map((item, index) => {
+            return(
+              <CSSTransition 
+                key={index}
+                timeout={1000} // 持续时间 1000毫秒
+                classNames='fade' // 定义动画的名称
+                unmountOnExit // 消失的时候将dom也删除了
+                onEnter={(el) => { // js的动画表现形式
+                el.style.color = 'blue'
+                }}
+                appear={true} // 第一次进入也会执行动画
+                >
+                  <div >{item}</div>
+              </CSSTransition>
+            )
+          })
+        }
+        </TransitionGroup>
+        <button onClick={this.handleToogle}>
+          切换
+        </button>
+      </Fragment>
+    )
+  }
+  handleToogle () {
+    this.setState(((prevState)=>{
+      return {
+        list:[...prevState.list,'item']
+      }
+    }))
+  }
+}
+```
+
+
+
+
+
+
+
+关于react的一些最佳实践 
+
+1. setState最好将数据进行解构复制后在进行赋值
+2. setState的写法
+
+````JavaScript
+// 对象的写法
+this.setState({
+    list: [...res.data]
+})
+// 一个数据并且return的写法
+this.setState(() => ({
+    	list: [...res.data]
+	})
+)
+// 多个数据并且return 的写法
+this.setState(() => {
+    return {
+        list: [...res.data]
+    }
+})
+````
+
+3. 异步请求 放在`	componentDidMount`里面相对合理
+
+
+
+
+
+## Redux
+
+Radux = Reducer + Flux 
+
+react是非常轻量级的视图框架,在组件传递上面 需要一个 state来共享数据
+
+根据好不错的React的UI库,  antd 
+
+```
+npm install antd --save
+```
+
+
+
+Redux的工作流程
+
+​    ![](https://s1.ax2x.com/2018/11/11/5m7DmQ.png)
+
+
+
+关于Redux
+
+Redux是唯一的
+
+只有store能够改变自己的内容,并且不能直接改变自己的内容
+
+reducer必须是一个纯函数(给定固定的输入,就有固定的输出,并且不会存在任何副作用,例如 不可以出现 (new Date() 这样的不定值 这就不是纯函数))
+
+
+
