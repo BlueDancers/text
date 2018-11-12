@@ -5,18 +5,18 @@
 CSS3动画属性:
 
 ```css
-animation: name duration timing-function delay iteration-count direction;
+animation: name duration timing-function delay iteration-count direction fillmode;
 ```
 
 当然这里刚开始不建议写在一起,可以分开写
 
 - animation-name:  动画名称,也就是@keyframe
-
-- animation-duration: 规定完成动画所花费的时间，以秒或毫秒计。 
+- animation-duration: 规定完成动画所花费的时间，以秒或毫秒计
 - animation-timing-function 动画的速度曲线。 
 - animation-delay: 在动画开始之前延迟多久
 - animation-iteration-count: 动画的播放(迭代)次数
-- animation-direction: 规定是否应该轮流反向播放动画。 
+- animation-direction: 规定是否应该轮流反向播放动画
+- animation-fill-mode 属性规定动画在播放之前或之后，其动画效果是否可见
 
 ### animation-name
 
