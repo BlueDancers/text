@@ -57,6 +57,7 @@ module.exports = {
 
 ````JavaScript
 <script src="//g.alicdn.com/fdilab/lib3rd/viewport-units-buggyfill/0.6.2/??viewport-units-buggyfill.hacks.min.js,viewport-units-buggyfill.min.js"></script>
+// 建议下载到项目中
     <script>
       window.onload = function () { 
         window.viewportUnitsBuggyfill.init({ hacks: window.viewportUnitsBuggyfillHacks });
@@ -64,3 +65,20 @@ module.exports = {
     </script>
 ````
 
+#### 注意
+
+如果遇到图片无法正常显示
+
+1.img图片不显示：
+
+全局引入
+
+```
+img { 
+	content: normal !important;
+}
+```
+
+2.与第三方UI库兼容问题：
+
+使用postcss-px-to-viewport-opt，然后使用exclude配置项，具体参考 [Vue+ts下的移动端vw适配（第三方库css问题）](https://zhuanlan.zhihu.com/p/36913200)
