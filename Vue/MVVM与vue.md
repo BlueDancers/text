@@ -13,7 +13,9 @@
 
 [MVC](https://draveness.me/mvx)这个岁数比我都大的架构,网上的资料太多了,相对的MVC的架构也有很多种,但是有一点不变
 
-![](https://raw.githubusercontent.com/Draveness/analyze/master/contents/architecture/images/mvx/Standard-MVC.jpg)
+(相对来话说,我个人感觉这样的构架对于B/S架构更加合理)
+
+![](http://on7r0tqgu.bkt.clouddn.com/FkmRRl55zrAkFKAklb2mDMCiqOIc.png )
 
 各种架构模式的作用就是分离关注,将属于不同模块的功能分散到合适的位置中,同时尽量降低各个模块的相互依赖并且减少需要联系的胶水代码
 
@@ -119,19 +121,79 @@ MVVM三要素
 
 模板的本质是字符串,但是有一定的逻辑(v-for..)
 
-- [with](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/with)
-- 模板信息都没
+[with](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/with)
 
 在vue源码里面的10831行 或者搜索`code.render `打印出来看一下就知道了render渲染后的模板
 
-经过render函数的解析,最后返回的是vnode
+```html
+<!DOCTYPE html>
+<html lang="en">
 
-### Vue的整个实现流程
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <!-- <script src="https://cdn.bootcss.com/vue/2.5.16/vue.js"></script> -->
+  <script src="vue.js"></script>
+</head>
 
-1. 解析模板成render函数
-2. 响应式开始监听
-3. 首次渲染,显示页面,并且绑定依赖
-4. data属性变化,触发rerender
+<body>
+  <div id="app">
+    <p>{{ price }}</p>
+  </div>
+
+  <script>
+    var vm = new Vue({
+      el: "#app",
+      data: {
+        price: 100
+      }
+    })
+
+
+    //render函数
+    function render() {
+      with(this) { //this就是vm
+        return _c(
+          'div', {
+            attrs: {
+              'id': 'app'
+            }
+          }, [
+            _c('p', [
+              _v(_s(price))
+            ])
+          ]
+        )
+      }
+    }
+
+    //不使用with的情况
+    function render() {
+      return vm._c( //createElement创建节点
+        'div', {
+          attrs: {
+            'id': 'app'
+          }
+        }, [
+          vm._c('p', [
+            vm._v(vm._s(vm.price)) //vm._v创建文本节点 vm._s  VM.toString
+          ])
+        ]
+      )
+    }
+  </script>
+</body>
+
+</html>
+```
+
+
+
+
+
+
 
 
 
