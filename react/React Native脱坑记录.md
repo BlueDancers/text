@@ -274,3 +274,43 @@ Error: There were multiple failures while executing work items
 
 
 
+报错`远程主机强迫关闭了一个现有的连接。`
+
+```
+* What went wrong:
+Execution failed for task ':app:installDebug'.
+> com.android.builder.testing.api.DeviceException: com.android.ddmlib.InstallException: 远程主机强迫关闭了一个现有的连接。
+```
+
+百度半天 按别人说的都试过了,都不行
+
+例如
+
+```
+adb kill-server
+adb start-server
+```
+
+还有
+
+```
+查看5037端口都有哪些进程 
+输入 netstat -aon|findstr “5037”
+找出该进程 
+输入 tasklist|findstr “xxxx”,xxxx为进程的PID，
+打开任务管理器 
+Ctrl+Alt+Delete
+结束相应的进程
+重新连接手机和电脑
+```
+
+都不行
+
+下面是我的简单粗暴地解决办法
+
+1. 取消手机授权
+2. 打开手机授权
+3. 解决
+
+
+
