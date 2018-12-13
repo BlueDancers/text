@@ -26,46 +26,13 @@ npm install --save prop-types
 
 
 
-### React Native中的点击事件相关
-
-`TouchableWithoutFeedback`: 按钮,但是没有视觉变化
-
-弹窗:
-
-```JavaScript
-Alert.alert('提示','确定删除吗',[
-    {text:'取消',onPress: ()=> {//...}},
-    {text:'确认',onPress: ()=> {//...}},
-])
-```
-
-
-
-事件: 
-
-`onPress`: 单击事件
-
-`onLongPress`: 长按事件
-
-`onPressIn`: 单击开始事件
-
-`onPressOut`: 单击结束事件
-
-
-
 ### React Native中的样式表
 
 [布局属性](https://reactnative.cn/docs/layout-props/)
 
 
 
-### 安装axios出现无法运行的情况?!
-
-可能是npm的原因,这里主要看报错信息,看是不是缺少依赖包,实在不行就重新 `react-native init 新项目 `
-
-
-
-### 写到一半的应用再次打开白屏???
+### 写到一半的应用虚拟机再次打开白屏???
 
 目前还不知道根本原因是什么,但是还算可以解决
 
@@ -110,7 +77,7 @@ componentDidMount() {
 
 
 
-
+### 安装`react-native-image-picker`报错
 
 > 不知道为什么,不管安装什么插件,都会报错,甚至难以解决
 
@@ -224,6 +191,8 @@ cd .. && react-native run-android
 
 执行`gradlew clean`,再次启动,没有报错了
 
+
+
 ### 点击拍照 打开图库闪退的问题
 
 因为没有给予应用权限,在`android/app/src/AndroidManifest.xml`里面加权限
@@ -253,20 +222,11 @@ react-native link react-native-camera
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
 
-启动`react-native run-android` 报错
-
-````bash
-> Task :app:mergeDebugAssets FAILED
-Could not merge source set folders:
-Error: There were multiple failures while executing work items
 
 
->任务：app：mergeDebugAssets FAILED
-无法合并源集文件夹：
-错误：执行工作项时出现多个故障
-````
 
-没头绪,再次启动,项目启动成功了.........
+
+
 
 [仿ofo项目](https://github.com/MarnoDev/react-native-ofo),这个项目结构值得参考学习
 
@@ -274,43 +234,27 @@ Error: There were multiple failures while executing work items
 
 
 
-报错`远程主机强迫关闭了一个现有的连接。`
+## 键盘顶起底部导航栏
 
+这个输入法会顶起导航栏太丑了,google了一下 可以不让他顶起
+
+在项目里面的`android\app\src\main\AndroidManifest.xml`替换一行代码
+
+```xml
+<application
+      <!--//......-->
+      <activity
+        android:name=".MainActivity"
+        android:label="@string/app_name"
+        android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+         <!-- android:windowSoftInputMode="adjustResize"换成下面这个 -->       
+        android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+      </activity>
+      <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+    </application>
 ```
-* What went wrong:
-Execution failed for task ':app:installDebug'.
-> com.android.builder.testing.api.DeviceException: com.android.ddmlib.InstallException: 远程主机强迫关闭了一个现有的连接。
-```
-
-百度半天 按别人说的都试过了,都不行
-
-例如
-
-```
-adb kill-server
-adb start-server
-```
-
-还有
-
-```
-查看5037端口都有哪些进程 
-输入 netstat -aon|findstr “5037”
-找出该进程 
-输入 tasklist|findstr “xxxx”,xxxx为进程的PID，
-打开任务管理器 
-Ctrl+Alt+Delete
-结束相应的进程
-重新连接手机和电脑
-```
-
-都不行
-
-下面是我的简单粗暴地解决办法
-
-1. 取消手机授权
-2. 打开手机授权
-3. 解决
-
-
 
