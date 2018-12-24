@@ -19,9 +19,45 @@
 ]
 ```
 
-2. 
+2. 必须安装的插件
 
-必须安装的插件
+以下配置解决了什么
+
+`ctrl + alt + f`的格式化 不会自动添加分号 全部变成单引号
+
+编译器规范按editorconfig来
+
+创建`.editorconfig`
+
+```
+root = true
+
+# 对所有文件生效
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# 对后缀名为 md 的文件生效
+[*.md]
+trim_trailing_whitespace = false
+```
+
+更变vscode里面的`setting.json`
+
+```
+{
+   "prettier.singleQuote": true,
+   "prettier.semi": false,
+   "vetur.format.defaultFormatter.html": "js-beautify-html",
+   "vetur.format.defaultFormatterOptions": {
+      "wrap_attributes": "force-aligned"
+    }
+}
+```
 
 
 
