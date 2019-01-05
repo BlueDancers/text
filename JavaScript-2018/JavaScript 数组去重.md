@@ -50,7 +50,7 @@ function getFilterArray (array) {
 
 ### 另类的写法
 
-```
+```js
 var array = [1, 1, 5, 77, 32, 54, 2, 4, 5, 2, 2, 4, 52, 2, 2, 2, 2, 2]
 arrtoObject(arr)
 function arrtoObject(arrs) {

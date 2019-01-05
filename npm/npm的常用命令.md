@@ -23,6 +23,7 @@ npm install [-g] <pkg>[@<version>] # 安装指定包
 npm uninstall [-g] <pkg>[@<version>] # 卸载指定包
 npm ls# 查看当前目录下安装了那些包
 npm ls <pkg># 查看特定package的信息
+npm update # 更新当前所有包
 
 npm root # 查看当前包的安装路径
 npm root -g #查看全局npm安装的路径
