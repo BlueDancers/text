@@ -1,12 +1,33 @@
-# JavaScript的迭代方法
+# JavaScript的迭代函数与迭代函数的实现
 
-​	说到迭代方法,最先想到的是什么?`forEach`还是`map`,JavaScript发展至今,迭代的方法ES5提供了5种方法
+![Image result for JavaScript 迭代](http://www.vkcyan.top/Fk-nTStDUXi9PbFwLPeZ9z8Lfktl.png)
 
-每个方法都接收两个参数,(在每一项上运行的函数,**运行该函数的作用域对象(影响this的值)**)
+## 前言
 
-传入这些方法中的函数会接收3个参数,**数组项的值** **该项在数组的位置** **数组对象本身**
+​	如果对技术很自信,请直接看 实现的源码
 
-迭代函数执行后**可能会**也**可能不会**影响返回结果(这句话有点绕 雾..)
+​	如果想回顾一下基础,请按文章顺序阅读
+
+
+
+说到迭代方法,最先想到的是什么?`forEach`还是`map`,迭代的方法ES5提供了5种方法
+
+
+
+> 以下定义来自 JavaScript高级程序设计
+
+每个方法都接收两个参数
+
+1. 在每一项上运行的函数
+2. **运行该函数的作用域对象(影响this的值)**
+
+传入这些方法中的函数会接收3个参数
+
+1. **数组项的值** 
+2. **该项在数组的位置** 
+3. **数组对象本身**
+
+迭代函数执行后**可能会**也**可能不会**影响返回结果 (雾..)
 
 
 
@@ -89,8 +110,8 @@ obj2.print()
 #### 默认返回false
 
 ```js
-let array = [1,2,3,4,5,6,7,8,9]
-let result = array.every(e => {})
+var array = [1,2,3,4,5,6,7,8,9]
+var result = array.every(e => {})
 console.log(result); // 
 > false 
 ```
@@ -122,8 +143,8 @@ console.log(result);
 #### 默认返回false
 
 ```js
-let array = [1,2,3,4,5,6,7,8,9]
-let result = array.some(e => {})
+var array = [1,2,3,4,5,6,7,8,9]
+var result = array.some(e => {})
 console.log(result); // 
 > false 
 ```
@@ -145,9 +166,7 @@ console.log(result);
 > false
 ```
 
-
-
-以上两个都不是很常用,但是毫无疑问这个要比用forEach代码要简介很多
+以上两个都不是很常用,但是毫无疑问在特定的需求下,这个要比用forEach代码要简洁很多
 
 
 
@@ -156,8 +175,8 @@ console.log(result);
 > 对数组中的每一项运行给定函数,该函数会返回true的项组成的数组
 
 ````javascript
-let array = [1,2,3,4,5,6,7,8,9]
-let result = array.filter(e => {
+var array = [1,2,3,4,5,6,7,8,9]
+var result = array.filter(e => {
   return e>5
 })
 console.log(result);
@@ -170,7 +189,7 @@ console.log(result);
 
 
 
-## map(判断函数)
+## map(处理函数)
 
 > 对数组中的每一项运行给定函数,返回每次函数调用的结果组成的数组
 
@@ -181,6 +200,13 @@ var result = array.map(e => {
 })
 console.log(result);
 > [false, false, false, false, false, true, true, true, true]
+
+var array = [1,2,3,4,5,6,7,8,9]
+var result = array.map(e => {
+  return e*2
+})
+console.log(result);
+> [2, 4, 6, 8, 10, 12, 14, 16, 18]
 ````
 
 
@@ -205,6 +231,16 @@ console.log(arraypush);
 
 
 
+到这里,我想起了我第一次使用`filter`函数的时候,我惊呆了,这函数太强大了!
+
+如此好用的工具函数,不自己实现一遍怎么能做到完全了解
+
+
+
+
+
+> 以下函数为自己实现的,并不是源码,若有错误请指点!
+
 ## 实现forEach
 
 首先明显forEach是Array上的原型链上的函数所以第一件事就是创建一个原型方法
@@ -213,14 +249,10 @@ console.log(arraypush);
 Array.prototype.MyforEach = function (){}
 ```
 
-forEact 第一个参数为一个匿名函数 第二个参数为this指向
-
-所以
+forEact 第一个参数为一个匿名函数 第二个参数为this指向 所以
 
 ```js
-Array.prototype.MyforEach = function (fn,obj){
- 	
-}
+Array.prototype.MyforEach = function (fn,obj){}
 ```
 
 forEach会迭代调用它的数组所以内部肯定是循环
@@ -253,7 +285,7 @@ Array.prototype.MyforEach = function (fn,obj){
 运行一下试试,就用之前的例子
 
 ```js
-var array = [1,2,3,4,5,6,7,8,9,]
+var array = [1,2,3,4,5,6,7,8,9]
 Array.prototype.MyforEach = function (fn,obj){
   let len = this.length
   if (obj !== 'undefined') {
@@ -279,3 +311,125 @@ obj2.print()
 > 张三
 ```
 
+
+
+## 实现map
+
+map与forEach的区别是 
+
+1. map中如果是运算,会返回每次函数调用的新的结果组成的数组 
+2. map中如果是判断,会返回每次迭代结果组成的数组
+
+所以只要在迭代函数内部创建一个数组,每次迭代都push进去,最后返回出去就好啦
+
+```JavaScript
+Array.prototype.Mymap = function (fn,obj){
+  var resultData = []
+  var len = this.length
+  if (obj !== 'undefined') {
+    fn = fn.bind(obj)
+  }
+  for (let index = 0; index < len; index++) {
+    resultData.push(fn(this[index],index,this))
+  }
+  return resultData
+}
+```
+
+运行一下
+
+```JavaScript
+var array = [1,2,3,4,5,6,7,8,9,]
+var result = array.Mymap(e => {
+    return e*2
+})
+console.log(result);
+> [2, 4, 6, 8, 10, 12, 14, 16, 18]
+```
+
+
+
+## 实现 some every
+
+some与every都会有一个特点 默认返回false
+
+不同的地方在于
+
+​	 **some**要求 全部返回`false`返回`false`
+
+​	 **every**要求 全部返回`true`返回`true ` 
+
+````JavaScript
+// -- every -- 
+Array.prototype.Myevery = function (fn,obj) {
+  var len = this.length
+  if (obj !== 'undefined') {
+    fn = fn.bind(obj)
+  }
+  for (let index = 0; index < len; index++) {
+    if (fn(this[index],index,this) == undefined) { // 无返回值 默认返回false
+      return false
+    }else if (fn(this[index],index,this) !== true) { // 出现一个不为 true 就停止迭代 返回结果
+      return false
+    }
+  }
+  return true
+}
+
+// -- some -- 
+Array.prototype.Mysome = function (fn,obj) {
+  var len = this.length
+  if (obj !== 'undefined') {
+    fn = fn.bind(obj)
+  }
+  for (let index = 0; index < len; index++) {
+    if (fn(this[index],index,this) == undefined) {
+      return false
+    } else if (fn(this[index],index,this) !== false) {
+      return true
+    }
+  }
+  return false
+}
+````
+
+
+
+## 实现fliter
+
+相信到这里,你也可以直接实现一个fliter函数了,仅仅是多添加一个数组
+
+````js
+Array.prototype.Myfilter = function (fn, obj) {
+  let resultData = []
+  var len = this.length
+  if (obj !== 'undefined') {
+    fn = fn.bind(obj)
+  }
+  for (let index = 0; index < len; index++) {
+    if (fn(this[index],index,this) === true) {
+      resultData.push(this[index]) // 注意不是push函数结果
+    }
+  }
+  return resultData
+}
+
+// -- 运行 -- 
+
+var array = [1,2,3,4,5,6,7,8,9]
+var result = array.Myfilter(e => {
+  return e>5
+})
+console.log(result);
+>  [6, 7, 8, 9]
+````
+
+perfect!​ :stuck_out_tongue_closed_eyes:
+
+原来很多东西,并没有想象的那么复杂
+
+
+
+## 后记
+
+想起了之前掘金上的 `停止学习框架` 一文,以及后面各位大佬的 `驳 ....停止学习框架`,说到底都是为了告诉我们,不管学习什么,都要打好基础,作为前端开发者,最最基础的就是打好`JavaScript`的基础,基础扎实,学习框架都不是困难事情
