@@ -1,4 +1,11 @@
-# 
+---
+title: npm的常用命令
+date: 2019-01-03 15:52:21
+tags: "npm"
+categories: "开发"
+---
+
+
 
 ```bash
 npm <-h> # 列出帮助信息
