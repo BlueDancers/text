@@ -18,7 +18,7 @@
 
 > 基础的一些思路和Vue 动态路由的实现[Vue 动态路由的实现(后台传递路由，前端拿到并生成侧边栏)](https://segmentfault.com/a/1190000015419713)一样,核心部分加入了自己的理解
 
-![](http://www.vkcyan.top/FiqftUsSXXL0V_Yp1cd7EfnQEySH.png)
+![思路图](http://www.vkcyan.top/FiqftUsSXXL0V_Yp1cd7EfnQEySH.png)
 
 
 
