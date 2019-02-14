@@ -90,3 +90,56 @@ function Login() {
 
 
 改写成为链式调用后,代码可读性变好很多,也更加利于拓展,以后写代码要注意,不能用着高级API写着低级代码
+
+
+
+
+
+当然我们更加推荐使用`async/await` 进行异步控制,这样的代码看起来更加清晰可见
+
+```js
+async function Login() {
+  showLoading({
+    title: '登录中'
+  })
+  try {
+    let logincode = await login() // 获取code
+    let userInfo = await getUserInfo() // 获取用户
+    userInfo = JSON.stringify(userInfo) // 转json
+    let { code } = logincode
+    let loginResult = await _getPrivateInfo(code,userInfo) // 对接项目登录接口
+    hideLoading()
+    if (loginResult.data.result == 1) { // 验证接口 存储session 返回用户信息 给 调用者
+      let session = loginResult.header['Set-Cookie'].split('=')[1].split(';')[0]
+      setStorageSync('session', session)
+      return loginResult
+    } else {
+      showModal({
+        content: '登录出现错误',
+        showCancel: false
+      })
+      return -1
+    }
+  } catch (error) {
+    hideLoading()
+    new Error('登录请求调用出错', error)
+  }
+}
+
+// 请求代码解耦 便于后期维护
+function _getPrivateInfo(code,userInfo) {
+  return request({
+    // 发起请求
+    url: config.LoginUrl,
+    data: {
+      code,
+      userInfo
+    },
+    method: 'POST',
+    header: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}
+```
+
