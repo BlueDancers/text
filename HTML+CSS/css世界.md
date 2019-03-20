@@ -22,7 +22,65 @@ display: inline-block 外在盒子为inline 内在盒子为block 所以`inline-b
 
 
 
+小技巧
 
+> 文字少的时候居中显示 
+>
+> 文字的多的时候具右显示
+
+```css
+.box {
+  text-align: center;
+}
+.content {
+  display: inline-block;
+  text-align: left;
+}
+```
+
+
+
+认识一个新的css属性
+
+```
+outline 与 border很相似,都是设置轮廓的,但是 
+outline 不占据空间 ,会被绘制在内容之上 其他都与border一样
+```
+
+
+
+
+
+为了不影响流体布局,我们需要 "宽度分离原则" 	 css的width属性不与影响宽度的padding/ margin/border属性共存
+
+```css
+.father {
+　  width: 180px;
+}
+.son {
+　  margin: 0 20px;
+　  padding: 20px;
+　  border: 1px solid;
+}
+```
+
+
+
+
+
+也有比较简单的写法,因为大量的宽度分离,可能会让标签变得多层嵌套,
+
+所以就需要解决一个问题,width属性是作用在content-box方面的,所以,padding border margin才能会撑开元素,我们可以指定宽度不撑开,这里就涉及到了一各css3属性 box-sizing: border-box,将width作用域border上面,这样padding就会包含在里面
+
+````css
+  .data {
+      width: 100px;
+      height: 100px;
+      padding: 10px;
+      outline: 1px solid #000;
+      box-sizing: border-box;
+    }
+````
 
 
 
