@@ -120,7 +120,7 @@ import {reducer as headerReducer} from '../common/header/store';
 
 创建actionCreators分离action的创建
 
-```
+```js
 import actionTypes from '../../../store/actionTypes'
 
 function closeFocus () {
