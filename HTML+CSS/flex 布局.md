@@ -161,7 +161,13 @@ justify-content: center;
 align-items:center;
 ```
 
-​														--多学习,多总结,多努力,未来很美好
+### 一些细节属性
+
+```
+flex: flex-grow | flex-shrink |flex-basis
+```
+
+
 
 
 

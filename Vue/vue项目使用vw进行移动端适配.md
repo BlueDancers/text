@@ -3,14 +3,12 @@
 需要安装一下的插件
 
 ```
-npm install postcss-aspect-ratio-mini postcss-px-to-viewport postcss-write-svg postcss-cssnext postcss-viewport-units cssnano cssnano-preset-advanced --S
-// 这两个 根据自己生成的项目,我这里生成项目的时候没有安装
-npm install postcss-import postcss-url --S 
+npm install postcss-aspect-ratio-mini postcss-px-to-viewport postcss-write-svg postcss-cssnext postcss-viewport-units cssnano cssnano-preset-advanced postcss-import postcss-url --S
 ```
 
 
 
-`.postcssrc.js`配置
+`postcss.config.js`配置
 
 ```javascript
 module.exports = {
@@ -26,10 +24,12 @@ module.exports = {
       unitPrecision: 3, // 指定`px`转换为视窗单位值的小数位数（很多时候无法整除）
       viewportUnit: 'vw', // 指定需要转换成的视窗单位，建议使用vw
       selectorBlackList: ['.ignore', '.hairlines'], // 指定不转换为视窗单位的类，可以自定义，可以无限添加,建议定义一至两个通用的类名
-      minPixelValue: 1, // 小于或等于`1px`不转换为视窗单位，你也可以设置为你想要的值
+      minPixelValue: 0, // 小于或等于`1px`不转换为视窗单位，你也可以设置为你想要的值
       mediaQuery: false // 允许在媒体查询中转换`px`
     },
-    'postcss-viewport-units': {},
+    'postcss-viewport-units': {
+      filterRule: rule => rule.nodes.findIndex(i => i.prop === 'content') === -1
+    },
     cssnano: {
       preset: 'advanced',
       autoprefixer: false,
@@ -37,6 +37,7 @@ module.exports = {
     }
   }
 };
+
 ```
 
 
