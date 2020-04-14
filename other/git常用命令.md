@@ -2,6 +2,8 @@
 
 git add .**添加指定文件到暂存区**
 
+git reset file  **撤销提交**
+
 git status  **显示有变更的文件**
 
 git commit -m "first commit" **提交暂存区到仓库区**
@@ -24,11 +26,45 @@ git branch -d dev **删除dev分支**
 
 git log **显示当前分支的版本历史**
 
+git reset --hard commitId **回到指定commit**
+
+
+
+### 解决冲突
+
+对于git pull之后提示有冲突的文件都会存在于缓存区中，需要打开文件进行冲突的手动合并，之后在进行提交（建议借助git可视化工具进行冲突解决）
+
+建立里程碑
+
+通过git工具的release来打版本号，建立版本数据
+
+
+
+### 合并分支
+
+合并分支使用merge
+
+例如
+
+我当前在master分支上，我希望合并test分支
+
+```bash
+git merge test
+```
+
+即可完成分支
+
+
+
 
 
 其他更多命令请看 
 
 [常用 Git 命令清单](https://www.ruanyifeng.com/blog/2015/12/git-cheat-sheet.html)
+
+
+
+
 
 
 
