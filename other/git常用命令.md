@@ -26,6 +26,8 @@ git branch -d dev **删除本地dev分支**
 
 git push origin --delete all-platforms **删除远程分支**
 
+git push origin develop:master -f **develop分支代码替换到master分支代码**
+
 git log **显示当前分支的版本历史**
 
 git reset --hard commitId **回到指定commit**
