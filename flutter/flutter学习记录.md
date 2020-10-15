@@ -320,7 +320,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 ## flutter的路由
 
-跳转页面
+### 跳转页面
 
 ````dart
 // 新建一个页面
@@ -359,4 +359,406 @@ class NewRoute extends StatelessWidget {
           builder: (context) => NewRoute(), fullscreenDialog: true));
     }
 ````
+
+
+
+### 路由传值（非命名路由）
+
+> 在子页面有2个方法可以返回到上个页面,第一个就是pop,第二个就是导航栏自带的导航
+> 区别是pop的可以携带数据到上一层,而导航栏自带的返回键无法携带数据
+
+```dart
+
+class TipRouter extends StatelessWidget {
+  // 获取上级页面传入的值
+  TipRouter({@required this.text});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('提示')),
+      // Padding widget似乎是用来定义padding的
+      body: Padding(
+        padding: EdgeInsets.all(20),
+        child: Center(
+          child: Column(
+            children: [
+              Text(text),
+              RaisedButton(
+                // 在子页面有2个方法可以返回到上个页面,第一个就是pop,第二个就是导航栏自带的导航
+                // 区别是pop的可以携带数据到上一层,而导航栏自带的返回键无法携带数据
+                onPressed: () => Navigator.pop(context, '返回去一个寂寞'),
+                child: Text('返回'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class RouterTestRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(50),
+      child: Center(
+          child: Column(
+        children: [
+          RaisedButton(
+              onPressed: () async {
+                var result = await Navigator.push(context,
+                    MaterialPageRoute(builder: (context) {
+                  return TipRouter(text: '测试文字');
+                }));
+                print('路由返回值,$result');
+              },
+              child: Text('打开提示页面')),
+          RaisedButton(
+              onPressed: () async {
+                Navigator.pop(context);
+              },
+              child: Text('返回上一页'))
+        ],
+      )),
+    );
+  }
+}
+```
+
+
+
+### 路由传值（命名路由）
+
+> 最外层的routers里面可以定义每个页面的路由
+
+```dart
+class App extends StatelessWidget {
+  @override
+  // widget的主要工作就是提供一个build方法你描述ui页面
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: '标题',
+      initialRoute: '/', // 默认路由
+      routes: {
+        'new_page': (context) => NewRoute(),
+        'router_test_route': (context) => RouterTestRoute(),
+        'tip_router': (context) {
+          // 如果页面存在参数接收的情况下,则需要这么写
+          return TipRouter(text: ModalRoute.of(context).settings.arguments);
+        },
+        '/': (context) => MyHomePage(title: ''),
+      },
+      theme: ThemeData(primaryColor: Colors.blue),
+    );
+  }
+}
+//跳转页面
+Navigator.pushNamed(context, 'router_test_route');
+// 跳转页面携带参数
+var result = await Navigator.pushNamed(context, 'tip_router',arguments: '我是参数');
+// 与无命名路由一致，命名路由也可以获取pop携带的返回数据
+```
+
+
+
+
+
+### 路由生成钩子
+
+```dart
+onGenerateRoute: (RouteSettings settings) {
+  // 如果使用了了onGenerateRoute,我们甚至不需要再使用路由表了,因为路由表里面不存在的路由就会走到这个函数中
+  // 我们可以在这个函数中进行判断是否给予通过,只需要创建一个路由映射表即可
+  // 例如未登录情况下,只允许访问基本的路由
+  print(settings);
+  return MaterialPageRoute(builder: (context) => NewRoute()); // 通过映射寻找页面
+},
+```
+
+
+
+## 包管理
+
+```dart
+name：应用或包名称。
+description: 应用或包的描述、简介。
+version：应用或包的版本号。
+dependencies：应用或包依赖的其它包或插件。
+dev_dependencies：开发环境依赖的工具包（而不是flutter应用本身依赖的包）。
+flutter：flutter相关的配置选项。
+```
+
+
+
+
+
+## 资源管理
+
+flutterApp安装包中包含代码与资源（assets）两部分，静态资源会被打包进入安装包中，可以在运行时候被访问
+
+常见的静态资源：json。png，jpg，webp，gif，等等
+
+
+
+### 指定assets
+
+​	在flutter中，静态资源，或者目录是需要进行配置
+
+```yaml
+  assets:
+    - assets/images/
+    - assets/static/
+```
+
+注册了之后才可以被访问到
+
+
+
+### 加载文本assets
+
+通过`rootBundle`对象加载
+
+```dart
+Future<String> loadAsset() async {
+  return await rootBundle.loadString('assets/static/1.json');
+}
+loadAsset().then((value) => print(value));
+```
+
+
+
+### 加载图片
+
+> AssetsImage会根据当前设备的像素比进行动态的选择
+
+```dart
+Widget build(BuildContext context) {
+  return Image.asset('assets/images/1.jpg');
+}
+```
+
+
+
+特定资源-设置app图标
+
+> : android/app/src/main/res android设置app图标
+
+> : ios/Runner/Assets.xcassets/AppIcon.appiconset 设置app图标
+
+ 
+
+## 启动页面
+
+https://book.flutterchina.club/chapter2/flutter_assets_mgr.html
+
+
+
+
+
+## widget简介
+
+#### StatellessWidget
+
+> StatellessWidget继承与widget，相对比较简单，主要用于不需要维护状态的场景，通常是通过嵌套其他widget的ui来构建ui
+
+```dart
+// StatelessWidget 静态类
+class Echo extends StatelessWidget {
+  const Echo({
+    Key key,
+    @required this.text,
+  }) : super(key: key);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        color: Colors.grey,
+        child: Text(text, textDirection: TextDirection.ltr),
+      ),
+    );
+  }
+}
+
+// 获取父级的标题
+class ContextRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // context是BuildContext实例,表示当前节点的上下文,可以通过他获取父级的一些配置
+    return Container(
+      child: Builder(
+        builder: (context) {
+          // 获取标题
+          Scaffold scaffold = context.findAncestorWidgetOfExactType<Scaffold>();
+          return (scaffold.appBar as AppBar).title;
+        },
+      ),
+    );
+  }
+}
+```
+
+
+
+#### StatefulWidget
+
+> statelfulWidget同样也是继承与Widget类，但是相对于StatelessWidget来说，要复杂很多，并新增加了一个接口，createState()
+>
+> createState()用于创建和StatefulWidget相关的状态，每次生成的时候都会调用
+
+```
+
+```
+
+
+
+### State生命周期
+
+```dart
+class CounterWidget extends StatefulWidget {
+  CounterWidget({Key key, this.initValue: 0});
+  final int initValue;
+  _CounterWidgetState createState() => _CounterWidgetState();
+}
+
+class _CounterWidgetState extends State<CounterWidget> {
+  int _counter;
+  void initState() {
+    super.initState();
+    _counter = widget.initValue;
+    print('initState');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print('build');
+    return Scaffold(
+      body: Center(
+        child: FlatButton(
+            onPressed: () => setState(() => ++_counter),
+            child: Text('$_counter')),
+      ),
+    );
+  }
+
+  void didUpdateWidget(CounterWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    print('didUpdateWidget');
+  }
+
+  void deactivate() {
+    super.deactivate();
+    print('deactivate');
+  }
+
+  void dispose() {
+    super.dispose();
+    print('dispose');
+  }
+
+  void reassbmble() {
+    super.reassemble();
+    print('reassbmble');
+  }
+
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print('didChangeDependencies');
+  }
+}
+```
+
+
+
+#### 首次进入的时候
+
+```dart
+flutter: initState
+flutter: didChangeDependencies
+flutter: build 
+```
+
+
+
+#### 热更新的时候
+
+```dart
+flutter: reassemble
+flutter: didUpdateWidget
+flutter: build 
+```
+
+
+
+#### 卸载组件的时候
+
+```dart
+flutter: reassemble
+flutter: deactivate
+flutter: dispose 
+```
+
+
+
+生命周期
+
+initState 当前widget初始化的时候会调用
+
+didChangeDependencies 当State发生变化的时候会被调用
+
+build widget进行渲染的时候，会在state，或者上层数据发生变化的时候调用
+
+reassemble 开发模式提供，热更新会调用
+
+didUpdateWidget 重新构建的时候，会对比key，决定时候更新组件
+
+deactivate 当组件树被移除的时候触发
+
+dispose 当确定对象从树永久移除的时候调用
+
+
+
+### 在weiget树上面获取State对象
+
+由于StatefulWidget的很多方法都在自己的state当中，所以，组件树想要调用，就需要通过一些方法来调用父级的State的方法
+
+```dart
+// 获取GlobalKey，用于获取当前State
+static GlobalKey<ScaffoldState> _globalKey = GlobalKey();
+
+@override
+Widget build(BuildContext context) {
+  print('build');
+
+  return Scaffold(
+    key: _globalKey,
+    body: Center(
+      child: Builder(builder: (context) {
+        return RaisedButton(
+          onPressed: () {
+            // 第一个就是通过context获取到上层的state
+            // 第二就是用过组件静态方法of获取到state
+            // ScaffoldState _state =
+            //     context.findRootAncestorStateOfType<ScaffoldState>();
+            ScaffoldState _state = Scaffold.of(context);
+            // _state.showSnackBar(
+            //   SnackBar(content: Text('我是SnackBar')),
+            // );
+            // 通过全局方法GlobalKey获取当前weiget state(开销较大,不推荐)
+            _globalKey.currentState.showSnackBar(
+              SnackBar(content: Text('我是SnackBar')),
+            );
+          },
+          child: Text('显示SnackBar'),
+        );
+      }),
+    ),
+  );
+}
+```
 
