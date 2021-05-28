@@ -58,7 +58,6 @@ module.exports = {
 
 ````JavaScript
 <script src="//g.alicdn.com/fdilab/lib3rd/viewport-units-buggyfill/0.6.2/??viewport-units-buggyfill.hacks.min.js,viewport-units-buggyfill.min.js"></script>
-// 建议下载到项目中
     <script>
       window.onload = function () { 
         window.viewportUnitsBuggyfill.init({ hacks: window.viewportUnitsBuggyfillHacks });

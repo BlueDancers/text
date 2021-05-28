@@ -24,7 +24,7 @@ git merge dev **合并dev分支到当前分支**
 
 git branch -d dev **删除本地dev分支**
 
-git push origin --delete all-platforms **删除远程分支**
+git push origin --delete dev **删除远程分支**
 
 git push origin develop:master -f **develop分支代码替换到master分支代码**
 
@@ -36,7 +36,7 @@ git checkout -b my-test  **在当前分支下创建my-test的本地分支分支*
 
 git push origin name:name **把新建的本地分支push到远程服务器**
 
-
+git checkout commitid -b dev-2 **在某次提交拉取代码，并创建到新的分支dev-2**
 
 ### 解决冲突
 

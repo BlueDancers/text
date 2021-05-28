@@ -762,3 +762,880 @@ Widget build(BuildContext context) {
 }
 ```
 
+
+
+## 状态管理
+
+> flutter的状态管理与大前端解决方案类似大前端
+
+### 自己管理自己的状态
+
+```dart
+class TapboxA extends StatefulWidget {
+  TapboxA({Key key}) : super(key: key);
+  _TapboxState createState() => new _TapboxState();
+}
+
+class _TapboxState extends State<TapboxA> {
+  bool _active = false;
+  void _handleTap() {
+    setState(() {
+      _active = !_active;
+    });
+  }
+
+  Widget build(BuildContext context) {
+    return new GestureDetector(
+      onTap: _handleTap,
+      child: Container(
+        child: Center(
+          child: Text(
+            _active ? 'Active' : 'Inactive',
+            textDirection: TextDirection.ltr,
+            style: TextStyle(fontSize: 48.0, color: Colors.white),
+          ),
+        ),
+        decoration: BoxDecoration(
+            color: _active ? Colors.lightGreen[700] : Colors.grey[600]),
+      ),
+    );
+  }
+}
+```
+
+
+
+### 父管理子的状态
+
+```dart
+
+class ParentWidget extends StatefulWidget {
+  _ParentWidgetState createState() => new _ParentWidgetState();
+}
+
+class _ParentWidgetState extends State<ParentWidget> {
+  bool _active = false;
+  void _handleTapboxChanged(bool newValue) {
+    setState(() {
+      _active = newValue;
+    });
+  }
+
+  Widget build(BuildContext context) {
+    return Container(
+      child: TapboxB(active: _active, onChanged: _handleTapboxChanged),
+    );
+  }
+}
+
+class TapboxB extends StatelessWidget {
+  TapboxB({Key key, this.active: false, @required this.onChanged})
+      : super(key: key);
+  final bool active;
+  final ValueChanged<bool> onChanged;
+  void _handTap() {
+    onChanged(!active);
+  }
+
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: _handTap,
+      child: Container(
+        child: Center(
+          child: Text(
+            active ? 'active' : 'inactive',
+            textDirection: TextDirection.ltr,
+            style: TextStyle(
+              fontSize: 32.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        decoration: BoxDecoration(
+          color: active ? Colors.lightGreen[700] : Colors.grey[600],
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+
+### 同时存在父与子的状态
+
+```dart
+class ParentWidgetC extends StatefulWidget {
+  _ParentWidgetC createState() => new _ParentWidgetC();
+}
+
+class _ParentWidgetC extends State<ParentWidgetC> {
+  bool _active = false;
+  void _handleTapboxChanged(bool newValue) {
+    setState(() {
+      _active = newValue;
+    });
+  }
+
+  Widget build(BuildContext context) {
+    return Container(
+      child: Tapboxc(
+        active: _active,
+        onChanged: _handleTapboxChanged,
+      ),
+    );
+  }
+}
+
+class Tapboxc extends StatefulWidget {
+  Tapboxc({Key key, this.active: false, @required this.onChanged})
+      : super(key: key);
+  final bool active;
+  final ValueChanged<bool> onChanged;
+
+  _TapboxCState createState() => new _TapboxCState();
+}
+
+class _TapboxCState extends State<Tapboxc> {
+  bool _highlight = false;
+  void _handleTapDown(TapDownDetails details) {
+    setState(() {
+      _highlight = true;
+    });
+  }
+
+  void _handleTapUp(TapUpDetails details) {
+    setState(() {
+      _highlight = false;
+    });
+  }
+
+  void _handleTapCancel() {
+    setState(() {
+      _highlight = false;
+    });
+  }
+
+  void _handleTap() {
+    widget.onChanged(!widget.active);
+  }
+
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: _handleTapDown,
+      onTapUp: _handleTapUp,
+      onTap: _handleTap,
+      onTapCancel: _handleTapCancel,
+      child: Container(
+        child: Center(
+          child: Text(
+            widget.active ? 'active' : 'inactive',
+            textDirection: TextDirection.ltr,
+            style: TextStyle(fontSize: 32, color: Colors.white),
+          ),
+        ),
+        width: 200,
+        height: 200,
+        decoration: BoxDecoration(
+            color: widget.active ? Colors.lightGreen[700] : Colors.grey[600],
+            border: _highlight
+                ? Border.all(color: Colors.teal[700], width: 10)
+                : null),
+      ),
+    );
+  }
+}
+```
+
+
+
+## 基础组件
+
+### 文本及样式
+
+Text组件主要用于显示样式文本
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(App());
+
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('文本组件'),
+        ),
+        body: Column(
+          children: [
+            Text(
+              '你好世界',
+              textAlign: TextAlign.left,
+            ),
+            Text(
+              '你好世界,我是vkcyan' * 4,
+              maxLines: 1, // 最多几行
+              overflow: TextOverflow.ellipsis, // 超出后如何显示
+            ),
+            Text(
+              '你好世界',
+              textScaleFactor: 1.5,
+            ), // textScaleFactor表示缩放比例
+            Text(
+              '你好世界',
+              style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 18.0,
+                  height: 1.2, //该属性用于指定行高,但是他不是一个绝对值,具体的高度是height*fontSize
+                  fontFamily: 'Courier',
+                  background: new Paint()..color = Colors.yellow,
+                  decoration: TextDecoration.underline,
+                  decorationStyle: TextDecorationStyle.dashed),
+            ),
+            Text.rich(TextSpan(children: [
+              // Text.rich可以显示widget组件
+              TextSpan(text: 'home:'),
+              TextSpan(
+                text: '111',
+                style: TextStyle(color: Colors.blue),
+                // recognizer: _tapRecognizer
+              ),
+            ])),
+            // 如果很多的text的样式都是一样的,那就使用defaulttextstyle组件,里面的text组件,只要未指定inherit为false,就会继承样式
+            DefaultTextStyle(
+                style: TextStyle(color: Colors.red, fontSize: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('hello word'),
+                    Text('I am jack'),
+                    Text(
+                      'i am jack',
+                      style: TextStyle(inherit: false, color: Colors.grey),
+                    ),
+                  ],
+                ))
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+
+### 按钮
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(App());
+
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('按钮'),
+        ),
+        body: Column(
+          children: [
+            // 水波纹按钮
+            RaisedButton(
+              onPressed: () {},
+              child: Text('水波纹按钮'), // 水波纹按钮默认有颜色,按下有水波纹
+            ),
+            // 扁平按钮,未点击没颜色,点击会置灰并存在水波纹
+            FlatButton(onPressed: () {}, child: Text('扁平按钮')),
+            // 带边框的按钮,水波纹的都有
+            OutlineButton(
+              onPressed: () {},
+              child: Text('带边框'),
+            ),
+            // 可以点击的icon
+            IconButton(icon: Icon(Icons.thumb_up), onPressed: () {}),
+            // 所有的按钮都存在icon的构造函数,可以使用他添加带图标的按钮
+            RaisedButton.icon(
+                onPressed: () {}, icon: Icon(Icons.info), label: Text('发送')),
+            // 自定义按钮 // 如果需要点击阴影就需要使用RaisedButton,这个组件支持
+            FlatButton(
+              color: Colors.blue, // 按钮背景颜色
+              highlightColor: Colors.blue[700], // 按钮按下时候的背景色
+              colorBrightness: Brightness.dark, // 按钮主题,
+              splashColor: Colors.grey, // 点击时候的水波纹颜色
+              child: Text('点击'), // 显示文字
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)), // 外形
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+### 文本组件
+
+```dart
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('文本组件'),
+        ),
+        body: Column(
+          children: [
+            Text(
+              '你好世界',
+              textAlign: TextAlign.left,
+            ),
+            Text(
+              '你好世界,我是vkcyan' * 4,
+              maxLines: 1, // 最多几行
+              overflow: TextOverflow.ellipsis, // 超出后如何显示
+            ),
+            Text(
+              '你好世界',
+              textScaleFactor: 1.5,
+            ), // textScaleFactor表示缩放比例
+            Text(
+              '你好世界',
+              style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 18.0,
+                  height: 1.2, //该属性用于指定行高,但是他不是一个绝对值,具体的高度是height*fontSize
+                  fontFamily: 'Courier',
+                  background: new Paint()..color = Colors.yellow,
+                  decoration: TextDecoration.underline,
+                  decorationStyle: TextDecorationStyle.dashed),
+            ),
+            Text.rich(TextSpan(children: [
+              // Text.rich可以显示widget组件
+              TextSpan(text: 'home:'),
+              TextSpan(
+                text: '名邦西城国际',
+                style: TextStyle(color: Colors.blue),
+                // recognizer: _tapRecognizer
+              ),
+            ])),
+            // 如果很多的text的样式都是一样的,那就使用defaulttextstyle组件,里面的text组件,只要未指定inherit为false,就会继承样式
+            DefaultTextStyle(
+                style: TextStyle(color: Colors.red, fontSize: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('hello word'),
+                    Text('I am jack'),
+                    Text(
+                      'i am jack',
+                      style: TextStyle(inherit: false, color: Colors.grey),
+                    ),
+                  ],
+                ))
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+
+### 按钮组件
+
+```dart
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('按钮'),
+        ),
+        body: Column(
+          children: [
+            // 水波纹按钮
+            RaisedButton(
+              onPressed: () {},
+              child: Text('水波纹按钮'), // 水波纹按钮默认有颜色,按下有水波纹
+            ),
+            // 扁平按钮,未点击没颜色,点击会置灰并存在水波纹
+            FlatButton(onPressed: () {}, child: Text('扁平按钮')),
+            // 带边框的按钮,水波纹的都有
+            OutlineButton(
+              onPressed: () {},
+              child: Text('带边框'),
+            ),
+            // 可以点击的icon
+            IconButton(icon: Icon(Icons.thumb_up), onPressed: () {}),
+            // 所有的按钮都存在icon的构造函数,可以使用他添加带图标的按钮
+            RaisedButton.icon(
+                onPressed: () {}, icon: Icon(Icons.info), label: Text('发送')),
+            // 自定义按钮 // 如果需要点击阴影就需要使用RaisedButton,这个组件支持
+            FlatButton(
+              color: Colors.blue, // 按钮背景颜色
+              highlightColor: Colors.blue[700], // 按钮按下时候的背景色
+              colorBrightness: Brightness.dark, // 按钮主题,
+              splashColor: Colors.grey, // 点击时候的水波纹颜色
+              child: Text('点击'), // 显示文字
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)), // 外形
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+
+### 单选框复选框
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(App());
+
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('单选框复选框'),
+        ),
+        body: SwitchAndcheckTestRouter(),
+        // body: FocusTestRouteState(),
+      ),
+    );
+  }
+}
+
+// 单选 多选 输入框基本操作
+class SwitchAndcheckTestRouter extends StatefulWidget {
+  _SwitchAndcheckTestRouterState createState() =>
+      new _SwitchAndcheckTestRouterState();
+}
+
+class _SwitchAndcheckTestRouterState extends State<SwitchAndcheckTestRouter> {
+  bool _switchSelected = false; // 单选
+  bool _checkboxSelected = false; // 复选框
+  TextEditingController _unameController =
+      TextEditingController(); // 定义一个text的控制器
+  GlobalKey _formKey = new GlobalKey<FormState>();
+  void initState() {
+    // 通过设置controller进行文本框的监听
+    _unameController.addListener(() {
+      print(_unameController.text);
+    });
+
+    // controller与onChanged的区别
+    // change仅仅是为了监听文本的变化
+    // controller想到与得到了该文本框的控制权 设置默认值 选择文本 等等
+    _unameController.text = '设置的文本'; // 设置文本
+    // 默认选择什么地方到什么地方的文字 (这里是第二位到最后一位)
+    _unameController.selection = TextSelection(
+        baseOffset: 2, extentOffset: _unameController.text.length);
+  }
+
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Switch(
+            activeColor: Colors.black87, // 选中颜色
+            value: _switchSelected,
+            onChanged: (value) {
+              setState(() {
+                _switchSelected = value;
+              });
+            }),
+        Checkbox(
+            value: _checkboxSelected,
+            onChanged: (value) {
+              setState(() {
+                _checkboxSelected = value;
+              });
+            }),
+
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          child: Form(
+              key: _formKey, // 用户后面获取FormState,
+              child: Column(
+                children: [
+                  TextFormField(
+                      autofocus: true, // 自动获取焦点
+                      controller: _unameController, // 通过设置controller进行更新
+                      decoration: InputDecoration(
+                          labelText: '用户名',
+                          hintText: '用户名或者邮箱',
+                          prefixIcon: Icon(Icons.person)),
+                      // 校验用户名
+                      validator: (v) {
+                        return v.trim().length > 0 ? null : "用户名不能为空";
+                      }),
+                  TextFormField(
+                    decoration: InputDecoration(
+                        labelText: '密码', // 未得到焦点的提示文字
+                        hintText: '您的登录密码', // 得到焦点的提示文字
+                        prefixIcon: Icon(Icons.lock) // 输入框图标
+                        ),
+                    //校验密码
+                    validator: (v) {
+                      return v.trim().length > 5 ? null : "密码不能少于6位";
+                    },
+                    onChanged: (v) {
+                      // 通过车子change回调更新
+                      print(v);
+                    },
+                    obscureText: true, // 隐藏正在编辑的文本,输入密码的场景
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 28),
+                    child: Row(
+                      children: [
+                        // 通过Builder来获取Rausedbutton所在的widget树真正的context
+                        Expanded(child: Builder(builder: (context) {
+                          return RaisedButton(
+                            onPressed: () {
+                              // 由于本widget也是form的子类,所以可以直接通过formState获取到
+                              if (Form.of(context).validate()) {
+                                //验证通过提交数据
+                              }
+                              // if ((_formKey.currentState as FormState)
+                              //     .validate()) {
+                              //   //验证通过提交数据
+                              // }
+                            },
+                            child: Text('登录'),
+                            color: Theme.of(context).primaryColor,
+                            textColor: Colors.white,
+                          );
+                        })),
+                      ],
+                    ),
+                  )
+                ],
+              )),
+        ),
+
+        // 自定义边框
+        Container(
+          child: TextField(
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+                labelText: 'Email',
+                hintText: '电子邮件地址',
+                prefixIcon: Icon(Icons.email),
+                border: InputBorder.none),
+          ),
+          decoration: BoxDecoration(
+            border:
+                Border(bottom: BorderSide(color: Colors.grey[600], width: 1)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class FocusTestRouteState extends StatefulWidget {
+  _FocusTestRouteState createState() => new _FocusTestRouteState();
+}
+
+// 输入框操作 移动焦点 隐藏键盘
+class _FocusTestRouteState extends State<FocusTestRouteState> {
+  FocusNode focusNode1 = new FocusNode();
+  FocusNode focusNode2 = new FocusNode();
+  FocusScopeNode focusScopeNode;
+
+  void initState() {
+    // 监听当前的输入框是否市区了焦点
+    focusNode1.addListener(() {
+      print(focusNode1.hasFocus);
+    });
+  }
+
+  onPressed1() {
+    // 移动焦点到第二个
+    // 方法1
+    // FocusScope.of(context).requestFocus(focusNode2);
+    // 方法2
+    if (focusScopeNode == null) {
+      focusScopeNode = FocusScope.of(context);
+    }
+    focusScopeNode.requestFocus(focusNode2);
+  }
+
+  onPressed2() {
+    focusNode2.unfocus();
+    focusNode1.unfocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
+      // 由于提示文本的TextField在会值下划线时候使用的颜色是主题色里面的hintColor,但是提示文字的颜色也是hintColor,如果我直接修改lintColor,这都会发生变化
+      // flutter中theme提供了设置提示文字的字段,覆盖子类样式
+      data: Theme.of(context).copyWith(
+          hintColor: Colors.grey[200],
+          inputDecorationTheme: InputDecorationTheme(
+              labelStyle: TextStyle(color: Colors.blue), // 定义未选中提示文本的字样
+              hintStyle:
+                  TextStyle(color: Colors.blue, fontSize: 24))), // 定义提示文本的字样
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(
+              autofocus: true,
+              focusNode: focusNode1,
+              decoration: InputDecoration(
+                  labelText: '输入框1',
+                  hintText: '请输入',
+                  // 未选中的文本框颜色
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey)),
+                  // 选中的文本框颜色
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black))),
+            ),
+            TextField(
+              focusNode: focusNode2,
+              decoration: InputDecoration(labelText: '输入框2'),
+            ),
+            Builder(
+              builder: (ctx) {
+                return Column(
+                  children: [
+                    RaisedButton(
+                      onPressed: onPressed1,
+                      child: Text('移动焦点'),
+                    ),
+                    RaisedButton(
+                      onPressed: onPressed2,
+                      child: Text('隐藏键盘'),
+                    )
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+
+
+### 进度指示器
+
+> 线性指示器
+>
+> 圆形指示器
+>
+> 可自定义颜色，与大小线条宽度 圆形指示器大小
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(App());
+
+class App extends StatelessWidget {
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+          appBar: AppBar(
+            title: Text('进度指示器'),
+          ),
+          body: Column(
+            children: [
+              // 未指定进度就是一直在动
+              LinearProgressIndicator(
+                backgroundColor: Colors.grey[200],
+                valueColor: AlwaysStoppedAnimation(Colors.blue),
+              ),
+              // 指定进度就是到指定位置
+              LinearProgressIndicator(
+                backgroundColor: Colors.grey[200],
+                valueColor: AlwaysStoppedAnimation(Colors.blue),
+                value: 0.5,
+              ),
+              // 圆形加载中进度条
+              CircularProgressIndicator(
+                backgroundColor: Colors.grey[200], // 底色
+                valueColor: AlwaysStoppedAnimation(Colors.blue), // 加载中颜色
+                strokeWidth: 5, // 进度条粗细
+              ),
+              // 原型指定进度进度条
+              CircularProgressIndicator(
+                backgroundColor: Colors.grey[200],
+                valueColor: AlwaysStoppedAnimation(Colors.blue),
+                value: 0.5,
+              ),
+              // 自定义尺寸
+              // 关于line circular,并没有提供很多的指定的api,例如line1的线的粗细 circular 的圆的大小
+              // 这两个组件都是取决于父容器的尺寸进行绘制的边界,所以可以通过只存限制类widget进行指定尺寸
+              SizedBox(
+                height: 13,
+                child: LinearProgressIndicator(
+                  backgroundColor: Colors.grey[200],
+                  valueColor: AlwaysStoppedAnimation(Colors.blue),
+                  value: 0.5,
+                ),
+              ),
+              // 宽高不一致会变成椭圆
+              SizedBox(
+                height: 100,
+                width: 90,
+                child: CircularProgressIndicator(
+                  backgroundColor: Colors.grey[200],
+                  valueColor: AlwaysStoppedAnimation(Colors.blue),
+                  value: 0.7,
+                ),
+              ),
+              ProgressRoute(),
+            ],
+          )),
+    );
+  }
+}
+
+class ProgressRoute extends StatefulWidget {
+  _ProgressRouteState createState() => _ProgressRouteState();
+}
+
+class _ProgressRouteState extends State<ProgressRoute>
+    with SingleTickerProviderStateMixin {
+  AnimationController _animationController;
+
+  void initState() {
+    _animationController =
+        new AnimationController(duration: Duration(seconds: 3), vsync: this);
+    _animationController.forward();
+    _animationController.addListener(() {
+      setState(() {});
+    });
+    super.initState();
+  }
+
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  Widget build(BuildContext context) {
+    print(_animationController.value);
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: LinearProgressIndicator(
+              backgroundColor: Colors.grey[200],
+              valueColor: ColorTween(begin: Colors.grey, end: Colors.blue)
+                  .animate(_animationController),
+              value: _animationController.value,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+```
+
+
+
+## 布局类组件
+
+widget树主要可以分为 
+
+| 类型             | 例子         | widget                        |
+| ---------------- | ------------ | ----------------------------- |
+| 无叶子节点       | Image        | LeafRenderObjectWidget        |
+| 包含一个叶子节点 | DecoratedBox | SingleChildRenderObjectWidget |
+| 包含多个叶子节点 | Column，Row  | MultiChildRenderObjectWidget  |
+
+
+
+container： 容器组件
+
+row：横向组件
+
+column：竖向组件
+
+flex：row column的封装组件
+
+Expanded：可以指定flex占用的组件
+
+SizedBox： 盒子组件
+
+*Container*：容器组件
+
+Wrap：流式布局组件
+
+Flow：高级流式布局组件
+
+Stack：允许子组件堆叠的组件
+
+Positioned：可以根据Stack四个角来进行绝对定位
+
+Align：相对布局组件
+
+
+
+```dart
+    Wrap(
+      spacing: 8, // 主轴(水平)方向间距
+      runSpacing: 4, // 纵轴(垂直)方向间距
+      alignment: WrapAlignment.center, // 布局方式 start 从左边开始排列 center 每行都居中
+      children: [
+        Chip(
+          label: Text('第一312321312'),
+          avatar: CircleAvatar(
+            backgroundColor: Colors.blue,
+            child: Text('A'),
+          ),
+        ),
+        Chip(
+          label: Text('第二'),
+          avatar: CircleAvatar(
+            backgroundColor: Colors.blue,
+            child: Text('A'),
+          ),
+        ),
+        Chip(
+          label: Text('第三1'),
+          avatar: CircleAvatar(
+            backgroundColor: Colors.blue,
+            child: Text('A'),
+          ),
+        ),
+        Chip(
+          label: Text('第四312312312'),
+          avatar: CircleAvatar(
+            backgroundColor: Colors.blue,
+            child: Text('A'),
+          ),
+        )
+      ],
+    ),
+```
+
+
+
