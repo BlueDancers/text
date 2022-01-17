@@ -1,4 +1,14 @@
-# 使用@vue/reactivity 在vue2中编写 Custom hook
+# 在Option API中使用 Custom hook
+
+> 适应人群： 
+>
+> - 项目的vue2.x的版本，
+> - 还没在正式环境使用过composition API
+> - 但是又想享受hook带来的优势
+
+
+
+​	注：本文提出的方法并非最佳实践，而是是vue2项目渐进式切换到vue3的方案，保留的大家熟悉的编写方式，也保留了hook的优势，如果开发团队条件允许的话，建议直接使用composition API语法来完成逻辑编写
 
 ## 什么是hook
 
@@ -57,7 +67,7 @@ status: 'idle' | 'loading' | 'error' | 'success' | ... // 当前列表请求的�
 
 ​	这个问题在vue2中并没有非常好的解决方案，针对这个问题隔壁react从mixin到HOC最后到现在hook，给出了还不错的解决方案。
 
-​	现在@vue/reactivity提供了hook的能力，我们可以在vue中使用hook来优化提出的问题
+​	现在@vue/composition-api提供了hook的能力，我们可以在vue中使用hook来优化提出的问题
 
 
 
@@ -85,17 +95,15 @@ status: 'idle' | 'loading' | 'error' | 'success' | ... // 当前列表请求的�
 
 ​	虽然不同页面的内部逻辑细节都是不一样，但是总体流程、数据结构都是一样的，基于这样的前提，我们就可以针对共性来进行抽象，之后不论多少个页面，我们都使用抽象逻辑，也只需要维护抽象逻辑
 
-## hook并不是vue3的专属
+## 提供 **组合式 API** 的 Vue 2 插件
 
-​	在vue3版本中增加了hook的支持，这并不代表vue3与hook是绑定关系，实际上在任何前端应用中都可以使用vue3中提供的hook功能，也就是`@vue/reactivity`
+​	虽然hook是vue3版本才提出的，但是这并不代表hook与vue3是绑定关系，实际上在任何前端应用中都可以使用vue3中提供的hook功能
 
-```
-npm i @vue/reactivity
-```
+文档地址：[@vue/composition-api](https://github.com/vuejs/composition-api/blob/main/README.zh-CN.md)
 
 所以不论是vue3还是vue2，还是react，甚至html都可以使用这个npm包
 
-关于reactivity的具体实现，可以看看我之前的文章 [简易版Reactivity源码解析](https://juejin.cn/post/6974193452300894216)
+关于vue3的响应式核心包 @vue/reactivity的具体实现，可以看看之前的文章 [简易版Reactivity源码解析](https://juejin.cn/post/6974193452300894216)，读懂源码之后，自然解答了你对reactivity的全部疑问
 
 
 
@@ -103,7 +111,7 @@ npm i @vue/reactivity
 
 > 为了方便理解，以下代码为vue2.x，使用js进行编写
 
-**useReqList是一个自定义hook，作用是帮助我们抽象后台表单的公共逻辑，我们先看看未使用的情况，使用了之后，代码的变化，再看看如何实现**
+​	**useReqList是一个自定义hook，作用是帮助我们抽象后台表单的公共逻辑，我们先看看未使用的情况，使用了之后，代码的变化，再看看如何实现**
 
 
 
@@ -179,6 +187,8 @@ methods:{
 因为reactivity的特性，它们都是具备响应式
 
 避免重复编码，重复测试环节，节省开发时间
+
+**hook可以给n个接口使用，只要是请求表单接口，都不需要写重复部分的代码**，避免调试，测试环节
 
 
 
@@ -295,15 +305,7 @@ export function useReqList() {
 
 ### 更多的vue hook函数
 
-​		如果是vue3项目的话，可以使用hook工具库，[VueUse](https://vueuse.org/)，库里面提供了大量的常用方法，掘金上面有该工具库的介绍文章，根据官网说明该库是兼容vue2文档了
-
-```
-🎩 VueUse works for Vue 2 & 3 within a single package by the power of vue-demi!
-```
-
-作者在这里没有测试，有需要的小伙伴可以试试
-
-
+​	hook工具库，[VueUse](https://vueuse.org/)，库里面提供了大量的常用方法，掘金上面有该工具库的介绍文章，官网说明该库是兼容vue2文档了
 
 
 
@@ -315,17 +317,29 @@ export function useReqList() {
 
 ​	对于长时间写Class、vue2.x的人来说，最初接触vue3几乎发现不了非常明显的优点，setup语法不熟练的情况下基本还是按照Class的思维进行编码，无法发挥Hook的优势，导致写一段时间Vue3后的结论是：在单文件中class的代码组织能力几乎完爆setup语法...
 
-​	后来组件有一些项目经验，重新学习了react hook，逐渐对hook有了自己的理解；Hook主要完成逻辑与逻辑的分离，在react和vue中使用hook可以实现 **视图与视图的分析，视图与逻辑的分离，逻辑与逻辑的分离**，用这个的方式来实现单一职责，在此基础上完成逻辑与视图的低耦合高内聚的代码
+​	后来组件有一些项目经验，重新学习了react hook，逐渐对hook有了一些理解；Hook主要完成逻辑与逻辑的分离，在react和vue中使用hook可以实现 **视图与视图的分析，视图与逻辑的分离，逻辑与逻辑的分离**，用这个的方式来实现单一职责，在此基础上完成逻辑与视图的低耦合高内聚代码
+
+​	对于vue2的开发者在而言，可以渐进式的从vue2到vue3，先熟悉hook，在熟悉Composition API
 
 
 
-### 关于hook与vuex
+### 关于hook与vuex | observable
 
-从某种意义上来说hook是可以替代vuex的，react中的API useContext就提供了类似功能。但是刚接触hook不久的新手而言，很容易进入一个误区；就是将变量，逻辑封装在一个hook中的情况下，又在多个页面中使用，就会在内存中创建多个不共享的内容一致的空间，这样就出问题了。对于vue hook风格的全局状态管理库，我建议可以试试[Pinia](https://pinia.esm.dev/)
+​	从普遍意义上来说hook是可以替代vuex的，react中的API useContext就提供了类似功能。
+
+ 	vuex是无法替代hook的，他并不具备闭包的特性，使用vuex的话，那仅仅是拆分逻辑，有多少页面还是要写多少重复逻辑只是重复代码转义到vuex中而已
+
+​	但是刚接触hook不久的新手而言，很容易进入一个误区；将变量，逻辑封装在一个hook中的情况下，又在多个页面中使用，就会在内存中创建多个不共享的内容一致的空间，对于公共变量还是要使用全局状态管理库的。
+
+​	hook风格的全局状态管理库，建议可以试试[Pinia](https://pinia.esm.dev/)
+
+
 
 ## 结语
 
-​	使用过了一段时间的setup语法之后，对其看法也是慢慢从谨慎疑惑转变成为拥抱hook，Composition API 在逻辑抽象、类型推导、多方面均占优，虽然目前还存在一些小问题，但是相信尤大都会给开发一个答案，在未来，Custom Hook将会越来越普及，拥抱Custom Hook,Vue3吧!
+​	使用过了一段时间的setup语法之后，对其看法也是慢慢从谨慎疑惑转变成为拥抱hook，Composition API 在逻辑抽象、类型推导、多方面均占优，虽然目前还存在一些小问题，后面的迭代都会解决的，在未来几年Custom Hook将会越来越普及，拥抱Custom Hook,Vue3吧!
+
+
 
 如果使用中遇到了什么问题，请到QQ群 530496237，一起吹吹水
 

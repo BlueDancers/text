@@ -148,7 +148,7 @@ function track(target, key) {
 
 <img src="http://www.vkcyan.top/FhXB0sJ9-li2v03asqwdwKAis3Qs.png" style="zoom:50%;" />
 
-我们可以看到，变量a与effect中的函数关联在了一起，经过track处理后，effect内部用到的变量斗鱼effect建立了某种关联，至此我们就完成了依赖收集
+我们可以看到，变量a与effect中的函数关联在了一起，经过track处理后，effect内部用到的变量都与effect建立了某种关联，至此我们就完成了依赖收集
 
 ## computed
 

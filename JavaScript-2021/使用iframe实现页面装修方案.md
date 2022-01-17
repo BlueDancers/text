@@ -16,7 +16,7 @@
 
 **实际上也就是后台写一套与客户端一样的样式解析装修json，实现装修预览的效果**
 
-![](http://www.vkcyan.top/FjW_Ggj8OUF_yyXPUmEqhb_ZV_sz.jpg)
+<img src="http://www.vkcyan.top/FjW_Ggj8OUF_yyXPUmEqhb_ZV_sz.jpg" style="zoom:50%;" />
 
 
 

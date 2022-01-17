@@ -1,26 +1,8 @@
 # vkcyan的文档存放区
 
-其一 记录在学习,以及项目上面遇到的问题 对难点 重点的总结
+- 记录学习,以及项目上面遇到的问题，对难点与重点的总结
 
-其二 希望可以帮助到其他人,也许多看一篇有价值文档,可以在代码调试上面节省很多时间,就有时间做其他事情啦
-
-主要分为 
-
-**JavaScript** 
-
-- vue
-- es6
-- webpack
-
-**node.js** 
-
-- koa2
-
- **Java** 
-
-**docker**
-
- **等等一些日常问题**
+- 希望可以帮助到其他人,也许多看一篇有价值文档,可以在代码调试上面节省很多时间,就有时间做其他事情啦
 
 ## Vue
 
@@ -47,10 +29,6 @@
 [JavaScript - 异步的前世今生](https://github.com/vkcyan/text/blob/master/JavaScript/JavaScript%20%E5%BC%82%E6%AD%A5%E7%9A%84%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F.md)
 
 [.....更多请看目录](https://github.com/vkcyan/text/tree/master/JavaScript)
-
-
-
-## [docker相关文档](https://github.com/vkcyan/text/tree/master/linux)
 
 
 
