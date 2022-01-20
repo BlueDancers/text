@@ -823,6 +823,128 @@ var lengthOfLongestSubstring = function (s) {
 
 
 
+### 题目 最小覆盖子串（困难）
+
+时间复杂度：O(n2)
+
+空间复杂度：O(n)
+
+思路: 采用**字典 + 双指针滑动窗口来实现最小覆盖子串的查找**，因为题目不限制子串被覆盖的顺序，所以首先将子串通过Map结构转化为 **数值:数量（abc =>  {'a' => 1,'b' => 1,'c' => 1 }）**
+
+​	完成了Map的构建后，开始滑动右指针，知道map中数据都为0，代表当前滑动窗口覆盖了最小子串，这时候再开始左指针的滑动，知道左指针当前值在Map中，代表已经无法覆盖最小子串，此时左指针停止，再次开始滑动右指针，再次进入循环
+
+​	最后在每次滑动左边指针的时候，截取当前的最小覆盖子串，最后得到最小覆盖子串
+
+```js
+/**
+ * @param {string} s
+ * @param {string} t
+ * @return {string}
+ */
+ var minWindow = function (s, t) {
+  
+  // 最小子串大于字符串s，毕竟不存在最小子串，直接返回空
+  if(t.length > s.length) {
+    return ''
+  }
+  
+  let start = 0 // 指针开头
+  let end = 0 // 指针结尾
+  let result = '' // 存储最小覆盖子串
+
+  const need = new Map() // 存储最小子串数据
+  for (let i = 0; i < t.length; i++) {
+    const e = t[i];
+    need.set(e, need.has(e) ? need.get(e) + 1 : 1)
+  }
+  // need 为 "ABC" =>  {'A' => 1,'B' => 1,'C' => 1 }
+  let needType = need.size // 最小子串的长度,用于记录滑动窗户口还未包含几位数 
+
+  // 先走后指针
+  while (end < s.length) {
+    const c = s[end] // 滑动窗口右边向前
+    if (need.has(c)) { // 判断当前元素是否在map中
+      need.set(c, need.get(c) - 1) // 如果在map中,其值减1
+      if (need.get(c) == 0) {
+        // 如果当前值,在map中为0了,说明当前滑动窗口包含了当前值的所有数量
+        // 所以对记录map数量的数值再减1
+        needType -= 1
+      }
+    }
+    // 如果needType为0了,说明次数滑动窗口已经包含所有子串
+    while (needType === 0) {
+      // 获取当前子串
+      let carry = s.substring(start, end + 1)
+      // 对比存储子串与当前子串,获取最小的
+      if (result == '' || result.length > carry.length) {
+        result = carry
+      }
+      const c2 = s[start]
+      if (need.has(c2)) {
+        // 判断当前元素是否在map中,在,这说明某个值移出了,此时已经不是最小子串,因此map中的当前值,+1
+        // 因为去除了存在的值,当前子串已经不符合标准,needType记录值+1
+        // 左指针停止,开始右指针行动,知道它再次覆盖了子串
+        need.set(c2, need.get(c2) + 1)
+        if (need.get(c2) === 1) {
+          needType += 1
+        }
+      }
+      start += 1 // 左指针前进
+    }
+    end += 1 // 右指针前进
+  }
+  return result
+};
+```
+
+
+
+## 树
+
+- 一种分层数据的抽象模型，例如dom，菜单，树形控件，多层联动选择器
+- JavaScript中没有树，但是可以用Object和Array构建树
+- 常见操作 深度/广度有限遍历，先中后序遍历
+
+
+
+### 深度优先遍历
+
+含义： 尽可能深的搜索树的分支
+
+<img src="http://www.vkcyan.top/Fu9i_GNFOj3ED0ha-wZYehui7Hjs.png" style="zoom: 25%;" />
+
+```js
+// 深度优先遍历
+function inter1(tree) {
+  console.log(tree.value);
+  tree.child.map(e => inter(e)) // 递归调用
+}
+```
+
+
+
+### 广度优先遍历
+
+含义： 先访问离根节点最近的节点
+
+<img src="http://www.vkcyan.top/Fo5rbhxKVFzfG_VKCyiI7BDsO0uT.png" style="zoom: 25%;" />
+
+````js
+// 广度优先遍历
+function inter2(tree) {
+  const q = [tree] // 使用队列存储广度数据
+  while (q.length > 0) {
+    let c = q.shift() // 每次取队列最后一个
+    console.log(c.value);
+    c.child.forEach(e => {
+      q.push(e) // 再次将下一层数据加入队列
+    })
+  }
+}
+
+inter2(tree)
+````
+
 
 
 ## 小知识

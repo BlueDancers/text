@@ -151,7 +151,7 @@ export default defineComponent({
 
 ### emit
 
-同样与vue3的setup语法保持一致，注意子父防范需要符合react规范
+同样与vue3的setup语法保持一致，注意子父方法需要符合react规范
 
 ```html
 emit('changeVisible', false) // 子组件 
